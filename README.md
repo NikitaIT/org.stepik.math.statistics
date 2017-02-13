@@ -166,17 +166,17 @@
 <tr><td>"NB",<td>2.75245521612138e-20,<td>127.153,<td>2.2098810347116e-39,<td>599.190781781782,<td>2.08520531547468,<td>0.291460077013184,<td>2.5346496517362,<td>0.0138651671837597</td></tr>
 <tr><td colspan="9" style="border-bottom: 2px solid black"></td></tr></table>
 <h2>RhistG</h2>
-<img src="RhistG.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RhistG.png"></img>
 <h2>RhistN</h2>
-<img src="RhistN.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RhistN.png"></img>
 <h2>RhistNB</h2>
-<img src="RhistNB.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RhistNB.png"></img>
 <h2>RplotG</h2>
-<img src="RplotG.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotG.png"></img>
 <h2>RplotN</h2>
-<img src="RplotN.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotN.png"></img>
 <h2>RplotNB</h2>
-<img src="RplotNB.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotNB.png"></img>
 
 <h1>Отчет 2</h1>
 <table style="margin:auto;text-align:center;border:1px solid black;">
@@ -186,7 +186,7 @@
 <tr><td colspan="5" style="border-bottom: 2px solid black"></td></tr></table>
 
 <h2>hist</h2>
-<img src="hist.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/hist.png"></img>
 <h2>empiricalPlot</h2>
-<img src="empiricalPlot.png"></img>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/empiricalPlot.png"></img>
 </div>
