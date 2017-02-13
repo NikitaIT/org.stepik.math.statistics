@@ -9,15 +9,15 @@ install.packages("stargazer");
 library(ggplot2)
 library(stargazer);
 mustHave <- function(){
-  #   âûáîðî÷íûé ýêñöåññ
+  #   Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½Ñ‹Ð¹ ÑÐºÑÑ†ÐµÑÑ
   exc<<-function(x){
     sum((x-mean(x))^4)/length(x)/var(x)^2-3;
   }
-  #   âûáîðî÷íóþ àñèììåòðèþ
+  #   Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½ÑƒÑŽ Ð°ÑÐ¸Ð¼Ð¼ÐµÑ‚Ñ€Ð¸ÑŽ
   asm <<- function(x){
     sum((x-mean(x))^3)/length(x)/var(x)^(3/2)
   }
-  #   âñå õàðàêòåðèñòèêè
+  #   Ð²ÑÐµ Ñ…Ð°Ñ€Ð°ÐºÑ‚ÐµÑ€Ð¸ÑÑ‚Ð¸ÐºÐ¸
   allProp <<- function(x){ data.frame(mean = mean(x),var = var(x),asm = asm(x),exc = exc(x))}
 
   empiricalFun<<-function(x,t){z<-x[x<t]; length(z)/length(x)}
@@ -36,12 +36,12 @@ mustHave();
 init <- function(){
   AnnualDiameter<<-as.data.frame(read.csv("IDZ_1/annual-diameter-of-skirt-at-hem-.csv",col.names = c("AnnualDiameter")));
   
-  #a.	ñãåíåðèðîâàòü âûáîðêó äëèíû 1000 èç äàííîãî ðàñïðåäåëåíèÿ (ñòð. 19)
+  #a.	ÑÐ³ÐµÐ½ÐµÑ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð²Ñ‹Ð±Ð¾Ñ€ÐºÑƒ Ð´Ð»Ð¸Ð½Ñ‹ 1000 Ð¸Ð· Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ (ÑÑ‚Ñ€. 19)
   n <- 1000;
   rG <<- rgamma(n = n, shape = 10, rate = 5.3);
   rN <<- rnorm(n = n, mean = 2.3, sd = 0.3);
   rNB <<- rnbinom(n = n, size = 32,prob = 1/5);
-  #   çíà÷åíèÿ ôóíêöèè ðàñïðåäåëåíèÿ â òî÷êå x
+  #   Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ð² Ñ‚Ð¾Ñ‡ÐºÐµ x
   funP <<- list(G = {function(x){ pgamma(q = x, shape = 10, rate = 5.3);}},
                N = {function(x){ pnorm(q = x, mean = 2.3, sd = 0.3);}},
                NB = {function(x){ pnbinom(q = x, size = 32,prob = 1/5);}}
@@ -49,23 +49,23 @@ init <- function(){
 }
 init();
 
-# Âûáîðêà ñ òåìïèðàòóðîé
+# Ð’Ñ‹Ð±Ð¾Ñ€ÐºÐ° Ñ Ñ‚ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ð¾Ð¹
 empiricalPlot(AnnualDiameter$AnnualDiameter);
 
 hist(AnnualDiameter$AnnualDiameter, 
      breaks = 20,
      freq = F, 
      col = "lightblue",
-     xlab = "Òåìïèðàòóðà",
-     ylab = "Ïëîòíîñòü âåðîÿòíîñòè",
-     main = "Ãèñòîãðàììà, ñ êðèâîé ïëîòíîñòè Òåìïèðàòóðû"
+     xlab = "Ð¢ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ð°",
+     ylab = "ÐŸÐ»Ð¾Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚Ð¸",
+     main = "Ð“Ð¸ÑÑ‚Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð°, Ñ ÐºÑ€Ð¸Ð²Ð¾Ð¹ Ð¿Ð»Ð¾Ñ‚Ð½Ð¾ÑÑ‚Ð¸ Ð¢ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ñ‹"
 );
 AnnualDiameterProp <- allProp(AnnualDiameter$AnnualDiameter);
 
 write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
-# êîíåö âûáîðêè ñ òåìïèðàòóðîé
+# ÐºÐ¾Ð½ÐµÑ† Ð²Ñ‹Ð±Ð¾Ñ€ÐºÐ¸ Ñ Ñ‚ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ð¾Ð¹
 
-#b.	ïîñòðîèòü ïî äàííîé âûáîðêå ýìïèðè÷åñêóþ ôóíêöèþ ðàñïðåäåëåíèÿ;
+#b.	Ð¿Ð¾ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð¿Ð¾ Ð´Ð°Ð½Ð½Ð¾Ð¹ Ð²Ñ‹Ð±Ð¾Ñ€ÐºÐµ ÑÐ¼Ð¿Ð¸Ñ€Ð¸Ñ‡ÐµÑÐºÑƒÑŽ Ñ„ÑƒÐ½ÐºÑ†Ð¸ÑŽ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ;
 bildEmpiricalPlots <- function(){
     empiricalPlot(rG);
     empiricalPlot(rN);
@@ -74,12 +74,12 @@ bildEmpiricalPlots <- function(){
 bildEmpiricalPlots();
 
 
-#c.	ïîñòðîèòü ãèñòîãðàììó ÷àñòîò;
+#c.	Ð¿Ð¾ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð³Ð¸ÑÑ‚Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñƒ Ñ‡Ð°ÑÑ‚Ð¾Ñ‚;
 
-#   Ñìîòðåòü ïîñëå ïóíêòà d.
+#   Ð¡Ð¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ Ð¿Ð¾ÑÐ»Ðµ Ð¿ÑƒÐ½ÐºÑ‚Ð° d.
 
-#d.	ñðàâíèòü ãèñòîãðàììó ÷àñòîò è ðåàëüíóþ ïëîòíîñòü äàííîãî ðàñïðåäåëåíèÿ 
-#  (âû÷èñëåíèå çíà÷åíèÿ ïëîòíîñòè â òî÷êå 19 ñòð.)
+#d.	ÑÑ€Ð°Ð²Ð½Ð¸Ñ‚ÑŒ Ð³Ð¸ÑÑ‚Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñƒ Ñ‡Ð°ÑÑ‚Ð¾Ñ‚ Ð¸ Ñ€ÐµÐ°Ð»ÑŒÐ½ÑƒÑŽ Ð¿Ð»Ð¾Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ 
+#  (Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ð¿Ð»Ð¾Ñ‚Ð½Ð¾ÑÑ‚Ð¸ Ð² Ñ‚Ð¾Ñ‡ÐºÐµ 19 ÑÑ‚Ñ€.)
 #
 
 ranges <- list(G = (((range(rG)[1]*100):(range(rG)[2]*100))/100),
@@ -93,16 +93,16 @@ densitys <- list(G = dgamma(x = ranges$G,
                  NB = dnbinom(x = ranges$NB, 
                               size = 32,prob = 1/5))
 
-#   ïîñòðîåíèå c&d Çåëåíûé - ãåí.ñîâîê. Êðàñíûé - âûáîðêà
+#   Ð¿Ð¾ÑÑ‚Ñ€Ð¾ÐµÐ½Ð¸Ðµ c&d Ð—ÐµÐ»ÐµÐ½Ñ‹Ð¹ - Ð³ÐµÐ½.ÑÐ¾Ð²Ð¾Ðº. ÐšÑ€Ð°ÑÐ½Ñ‹Ð¹ - Ð²Ñ‹Ð±Ð¾Ñ€ÐºÐ°
 hist3 <- function(){
   {
     hist(rG, 
          breaks = 20,
          freq = F, 
          col = "lightblue",
-         xlab = "Òåìïèðàòóðà",
-         ylab = "Ïëîòíîñòü âåðîÿòíîñòè",
-         main = "rG Ãèñòîãðàììà, ñ êðèâîé ïëîòíîñòè"
+         xlab = "Ð¢ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ð°",
+         ylab = "ÐŸÐ»Ð¾Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚Ð¸",
+         main = "rG Ð“Ð¸ÑÑ‚Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð°, Ñ ÐºÑ€Ð¸Ð²Ð¾Ð¹ Ð¿Ð»Ð¾Ñ‚Ð½Ð¾ÑÑ‚Ð¸"
     );
     lines(density(rG), col = "red", lwd = 2);
     lines(x = ranges$G, y = densitys$G, col = "green", lwd = 2);
@@ -112,9 +112,9 @@ hist3 <- function(){
          breaks = 20, 
          freq = F, 
          col = "lightblue",
-         xlab = "Òåìïèðàòóðà",
-         ylab = "Ïëîòíîñòü âåðîÿòíîñòè",
-         main = "rN Ãèñòîãðàììà, ñ êðèâîé ïëîòíîñòè"
+         xlab = "Ð¢ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ð°",
+         ylab = "ÐŸÐ»Ð¾Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚Ð¸",
+         main = "rN Ð“Ð¸ÑÑ‚Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð°, Ñ ÐºÑ€Ð¸Ð²Ð¾Ð¹ Ð¿Ð»Ð¾Ñ‚Ð½Ð¾ÑÑ‚Ð¸"
     );
     lines(density(rN), col = "red", lwd = 2);
     lines(x = ranges$N, y = densitys$N, col = "green", lwd = 2);
@@ -124,27 +124,27 @@ hist3 <- function(){
          breaks = 20, 
          freq = F, 
          col = "lightblue",
-         xlab = "Òåìïèðàòóðà",
-         ylab = "Ïëîòíîñòü âåðîÿòíîñòè",
-         main = "NB Ãèñòîãðàììà, ñ êðèâîé ïëîòíîñòè"
+         xlab = "Ð¢ÐµÐ¼Ð¿Ð¸Ñ€Ð°Ñ‚ÑƒÑ€Ð°",
+         ylab = "ÐŸÐ»Ð¾Ñ‚Ð½Ð¾ÑÑ‚ÑŒ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚Ð¸",
+         main = "NB Ð“Ð¸ÑÑ‚Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð°, Ñ ÐºÑ€Ð¸Ð²Ð¾Ð¹ Ð¿Ð»Ð¾Ñ‚Ð½Ð¾ÑÑ‚Ð¸"
     );
     lines(density(rNB), col = "red", lwd = 2);
     lines(x = ranges$NB, y = densitys$NB, col = "green", lwd = 2);
   }
 }
 hist3();
-#e.	âû÷èñëèòü ñëåäóþùèå âûáîðî÷íûå õàðàêòåðèñòèêè(ñòð.20-22):  
+#e.	Ð²Ñ‹Ñ‡Ð¸ÑÐ»Ð¸Ñ‚ÑŒ ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ðµ Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½Ñ‹Ðµ Ñ…Ð°Ñ€Ð°ÐºÑ‚ÐµÑ€Ð¸ÑÑ‚Ð¸ÐºÐ¸(ÑÑ‚Ñ€.20-22):  
 
-#   âûáîðî÷íîå ñðåäíåå
+#   Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½Ð¾Ðµ ÑÑ€ÐµÐ´Ð½ÐµÐµ
 means <- c(G = mean(rG), N = mean(rN), NB = mean(rNB));
-#   âûáîðî÷íóþ äèñïåðñèþ
+#   Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½ÑƒÑŽ Ð´Ð¸ÑÐ¿ÐµÑ€ÑÐ¸ÑŽ
 vars <- c(G = var(rG), N = var(rN), NB = var(rNB));
-#   âûáîðî÷íóþ àñèììåòðèþ
+#   Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½ÑƒÑŽ Ð°ÑÐ¸Ð¼Ð¼ÐµÑ‚Ñ€Ð¸ÑŽ
 asms <- c(G = asm(rG), N = asm(rN), NB = asm(rNB));
-#   âûáîðî÷íûé ýêñöåññ
+#   Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ñ‡Ð½Ñ‹Ð¹ ÑÐºÑÑ†ÐµÑÑ
 excs <- c(G = exc(rG), N = exc(rN), NB = exc(rNB));
 
-#f.	ñðàâíèòü ðåçóëüòàòû ïóíêòà 'e' ñ ðåàëüíûìè õàðàêòåðèñòèêàìè ðàñïðåäåëåíèÿ 
+#f.	ÑÑ€Ð°Ð²Ð½Ð¸Ñ‚ÑŒ Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚Ñ‹ Ð¿ÑƒÐ½ÐºÑ‚Ð° 'e' Ñ Ñ€ÐµÐ°Ð»ÑŒÐ½Ñ‹Ð¼Ð¸ Ñ…Ð°Ñ€Ð°ÐºÑ‚ÐµÑ€Ð¸ÑÑ‚Ð¸ÐºÐ°Ð¼Ð¸ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ 
 
 meansReal <- c(G = mean(funP$G(ranges$G)), N = mean(funP$N(ranges$N)), NB = mean(funP$NB(ranges$N)));
 varsReal <- c(G = var(funP$G(ranges$G)), N = var(funP$N(ranges$N)), NB = var(funP$NB(ranges$N)));
