@@ -8,7 +8,6 @@ install.packages("ggplot2");
 install.packages("stargazer");
 library(ggplot2)
 library(stargazer);
-
 mustHave <- function(){
   #   выборочный эксцесс
   exc<<-function(x){
@@ -20,7 +19,7 @@ mustHave <- function(){
   }
   #   все характеристики
   allProp <<- function(x){ data.frame(mean = mean(x),var = var(x),asm = asm(x),exc = exc(x))}
-  typeof(AnnualDiameter$AnnualDiameter)
+
   empiricalFun<<-function(x,t){z<-x[x<t]; length(z)/length(x)}
   empiricalPlot<<-function(x){
     xu<-unique(sort(x));
@@ -36,7 +35,7 @@ mustHave();
 #init
 init <- function(){
   AnnualDiameter<<-as.data.frame(read.csv("IDZ_1/annual-diameter-of-skirt-at-hem-.csv",col.names = c("AnnualDiameter")));
-
+  
   #a.	сгенерировать выборку длины 1000 из данного распределения (стр. 19)
   n <- 1000;
   rG <<- rgamma(n = n, shape = 10, rate = 5.3);
@@ -52,6 +51,7 @@ init();
 
 # Выборка с темпиратурой
 empiricalPlot(AnnualDiameter$AnnualDiameter);
+
 hist(AnnualDiameter$AnnualDiameter, 
      breaks = 20,
      freq = F, 
@@ -81,6 +81,7 @@ bildEmpiricalPlots();
 #d.	сравнить гистограмму частот и реальную плотность данного распределения 
 #  (вычисление значения плотности в точке 19 стр.)
 #
+
 ranges <- list(G = (((range(rG)[1]*100):(range(rG)[2]*100))/100),
                N = (((range(rN)[1]*100):(range(rN)[2]*100))/100),
                NB = range(rNB)[1]:range(rNB)[2]
@@ -151,8 +152,9 @@ asmsReal <- c(G = asm(funP$G(ranges$G)), N = asm(funP$N(ranges$N)), NB = asm(fun
 excsReal <- c(G = exc(funP$G(ranges$G)), N = exc(funP$N(ranges$N)), NB = exc(funP$NB(ranges$N)));
 
 
-t <- data.frame(meansReal,means,
+t <- ?data.frame(meansReal,means,
            varsReal,vars,
            asmsReal,asms,
            excsReal,excs)
+t
 write.csv(t,file = "tProp.csv")
