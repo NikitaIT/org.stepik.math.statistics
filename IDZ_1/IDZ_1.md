@@ -1,11 +1,10 @@
 # [ Репозиторий Статистика ](https://github.com/NikitaIT/org.stepik.math.statistics/)
-<header align="right">
-<p>Студент: Федоров Н.С.</p>
 
-<p>Группа: 5362</p>
+<p align="right">Студент: Федоров Н.С.</p>
 
-<p>Преподаватель: Медведев А.Н.</p>
-</header>
+<p align="right">Группа: 5362</p>
+
+<p align="right">Преподаватель: Медведев А.Н.</p>
 
 ---
 
@@ -94,7 +93,7 @@ write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
 <div style="text-align: center;">
 <h1>Отчет 1</h1>
 <table style="margin:auto;text-align:center;border:1px solid black;">
-<tr><td colspan="9" style="border-bottom: 2px solid black"></td></tr>
+<tr><td colspan="9" style="border-bottom: 20px solid black"></td></tr>
 <tr><td>"",<td>"meansReal",<td>"means",<td>"varsReal",<td>"vars",<td>"asmsReal",<td>"asms",<td>"excsReal",<td>"excs"</td></tr>
 <tr><td>"G",<td>0.640332256909482,<td>1.88373867932996,<td>0.142814997054233,<td>0.35542869877411,<td>-0.596028551852354,<td>0.478069480771901,<td>-1.29477217813216,<td>0.133389753239832</td></tr>
 <tr><td>"N",<td>0.48069643020812,<td>2.31551091492194,<td>0.165445118275218,<td>0.0918393367292663,<td>0.0701878180934444,<td>-0.0100929571610628,<td>-1.72443444383002,<td>-0.048480234942891</td></tr>
