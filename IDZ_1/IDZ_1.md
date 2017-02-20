@@ -24,8 +24,6 @@
 
 #### <a name="Idz_1"></a>	ИДЗ №1
 
-##### Задание
-
 Даны следующие распределения и параметры:
 
 Тип Распределения			| Параметры
@@ -40,14 +38,6 @@
 Необходимо для каждого распределения:
 
 * a.	сгенерировать выборку длины 1000 из данного распределения (см. стр. 19 методички)
-* b.	построить по данной выборке эмпирическую функцию распределения;
-* c.	построить гистограмму частот;
-* d.	сравнить гистограмму частот и реальную плотность данного распределения (вычисление значения плотности в точке в пакете R описано на той же 19 стр.)
-* e.	вычислить следующие выборочные характеристики:  выборочное среднее, выборочную дисперсию, выборочную асимметрию, выборочный эксцесс; 
-(см. стр. 20-22 методички)
-* f.	сравнить результаты пункта e  с реальными характеристиками распределения 
-
-
 
 ```R
   #a.	сгенерировать выборку длины 1000 из данного распределения (стр. 19)
@@ -55,6 +45,9 @@
   rG <<- rgamma(n = n, shape = 10, rate = 5.3);
   ...
 ```
+
+* b.	построить по данной выборке эмпирическую функцию распределения;
+
 ```R
   #b. построить по данной выборке эмпирическую функцию распределения; 
   bildEmpiricalPlots <- function(){ empiricalPlot(rG); ... }
@@ -64,6 +57,10 @@
   funP <<- list(G = {function(x){ pgamma(q = x, shape = 10, rate = 5.3);}}, ... }
   );
 ```
+
+* c.	построить гистограмму частот;
+* d.	сравнить гистограмму частот и реальную плотность данного распределения (вычисление значения плотности в точке в пакете R описано на той же 19 стр.)
+
 ```R
   #c&d.	сравнить гистограмму частот и реальную плотность данного распределения
   # точки для наложения
@@ -78,11 +75,21 @@ hist3 <- function(){
     lines(x = ranges$G, y = densitys$G, col = "green", lwd = 2);
   }
  ```
+ 
+* e.	вычислить следующие выборочные характеристики:  выборочное среднее, выборочную дисперсию, выборочную асимметрию, выборочный эксцесс; (см. стр. 20-22 методички)
 
 ```R
 # e. все характеристики
   allProp <<- function(x){ data.frame(mean = mean(x),var = var(x),asm = asm(x),exc = exc(x))} 
 ```
+
+* f.	сравнить результаты пункта e  с реальными характеристиками распределения 
+
+
+
+
+
+
 
 ```R
 # читаем темпиратуры
@@ -105,30 +112,38 @@ write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
 <tr><td>"N",<td>0.48069643020812,<td>2.31551091492194,<td>0.165445118275218,<td>0.0918393367292663,<td>0.0701878180934444,<td>-0.0100929571610628,<td>-1.72443444383002,<td>-0.048480234942891</td></tr>
 <tr><td>"NB",<td>2.75245521612138e-20,<td>127.153,<td>2.2098810347116e-39,<td>599.190781781782,<td>2.08520531547468,<td>0.291460077013184,<td>2.5346496517362,<td>0.0138651671837597</td></tr>
 <tr><td colspan="9" style="border-bottom: 2px solid black"></td></tr></table>
-<div style="width: 33%">
+
+<font color="green">Реальное распределение</font> - <font color="red">Выборочное распределение</font>
+
+<table>
+<tr><td colspan="3"> Гистограммы</td></tr>
+<tr>
+<td>
 <h2>RhistG</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RhistG.png"></img>
-</div>
-<div style="width: 33%">
+<td>
 <h2>RhistN</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RhistN.png"></img>
-</div>
+<td>
 <div style="width: 33%">
 <h2>RhistNB</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RhistNB.png"></img>
-</div>
-<div style="width: 33%">
+</tr>
+</table>
+<table>
+<tr>
+<td>
 <h2>RplotG</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotG.png"></img>
-</div>
-<div style="width: 33%">
+<td>
 <h2>RplotN</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotN.png"></img>
-</div>
-<div style="width: 33%">
+<td>
 <h2>RplotNB</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotNB.png"></img>
-</div>
+<td>
+</tr>
+</table>
 
 <h1>Отчет 2</h1>
 <table style="margin:auto;text-align:center;border:1px solid black;">
