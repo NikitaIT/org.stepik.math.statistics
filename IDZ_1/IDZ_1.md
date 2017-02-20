@@ -70,7 +70,6 @@
 <td>
 <h2>RplotNB</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/RplotNB.png"></img>
-<td>
 </tr>
 </table>
 
@@ -91,8 +90,9 @@ hist3 <- function(){
     lines(x = ranges$G, y = densitys$G, col = "green", lwd = 2);
   }
  ```
- <p color="green">Реальное распределение - ЗЕЛЕНЫМ</p>
-<p color="red">Выборочное распределение - КРАСНЫМ</p>
+
+<p color="green" align="right">Реальное распределение - ЗЕЛЕНЫМ</p>
+<p color="red" align="right">Выборочное распределение - КРАСНЫМ</p>
 
 <h2 align="center">Гистограммы</h2>
 <table>
@@ -119,6 +119,14 @@ hist3 <- function(){
 
 * f.	сравнить результаты пункта e  с реальными характеристиками распределения 
 
+<table>
+<tr><td colspan="9" style="border-bottom: 20px solid black"></td></tr>
+<tr><td><td>meansReal<td>means<td>varsReal<td>vars<td>asmsReal<td>asms<td>excsReal<td>excs</td></tr>
+<tr><td>G<td>0.64033225<td>1.88373867<td>0.1428149<td>0.35542869<td>-0.5960285<td>0.4780694<td>-1.29477217<td>0.13338975</td></tr>
+<tr><td>N,<td>0.48069643<td>2.31551091<td>0.16544511<td>0.09183933<td>0.0701878<td>-0.010092957<td>-1.72443444<td>-0.04848023</td></tr>
+<tr><td>NB<td>2.75245521612138e-20<td>127.153<td>2.2098810347116e-39,<td>599.19078<td>2.085205315<td>0.29146007<td>2.534649651<td>0.0138651671</td></tr>
+<tr><td colspan="9"></td></tr></table>
+
 Распределение из файла:
 
 ```R
@@ -126,6 +134,18 @@ hist3 <- function(){
 AnnualDiameter<<-as.data.frame(read.csv("IDZ_1/annual-diameter-of-skirt-at-hem-.csv",col.names = c("AnnualDiameter")));
    ```
 Повторяем пункты a-d
+
+<table>
+<tr><td colspan="5"></td></tr>
+<tr><td></td><td>mean</td><td>var</td><td>asm</td>,<td>exc</td></tr>
+<tr><td></td><td>731.086956</td><td>51786.0811</td><td>-0.7350737</td><td>0.7727566</td></tr>
+<tr><td colspan="5"></td></tr></table>
+
+<h2 align="center">Гистограмма</h2>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/hist.png"></img>
+<h2 align="center">Эмпирические</h2>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/empiricalPlot.png"></img>
+</div>
 
 ```R
 # сохраняем результаты
@@ -135,27 +155,10 @@ write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
 
 
 
-<table style="margin:auto;text-align:center;border:1px solid black;">
-<tr><td colspan="9" style="border-bottom: 20px solid black"></td></tr>
-<tr><td>"",<td>"meansReal",<td>"means",<td>"varsReal",<td>"vars",<td>"asmsReal",<td>"asms",<td>"excsReal",<td>"excs"</td></tr>
-<tr><td>"G",<td>0.640332256909482,<td>1.88373867932996,<td>0.142814997054233,<td>0.35542869877411,<td>-0.596028551852354,<td>0.478069480771901,<td>-1.29477217813216,<td>0.133389753239832</td></tr>
-<tr><td>"N",<td>0.48069643020812,<td>2.31551091492194,<td>0.165445118275218,<td>0.0918393367292663,<td>0.0701878180934444,<td>-0.0100929571610628,<td>-1.72443444383002,<td>-0.048480234942891</td></tr>
-<tr><td>"NB",<td>2.75245521612138e-20,<td>127.153,<td>2.2098810347116e-39,<td>599.190781781782,<td>2.08520531547468,<td>0.291460077013184,<td>2.5346496517362,<td>0.0138651671837597</td></tr>
-<tr><td colspan="9" style="border-bottom: 2px solid black"></td></tr></table>
 
 
 
 
 
 
-<table>
-<tr><td colspan="5"></td></tr>
-<tr><td>""</td><td>"mean"</td><td>"var"</td><td>"asm"</td>,<td>"exc"</td></tr>
-<tr><td>"1"</td><td>731.086956521739</td><td>51786.0811594203</td><td>-0.735073717935867</td><td>0.772756645400363</td></tr>
-<tr><td colspan="5"></td></tr></table>
 
-<h2>hist</h2>
-<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/hist.png"></img>
-<h2 align="center">Эмпирические</h2>
-<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/empiricalPlot.png"></img>
-</div>
