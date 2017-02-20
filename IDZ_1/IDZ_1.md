@@ -1,10 +1,10 @@
 # [ Репозиторий Статистика ](https://github.com/NikitaIT/org.stepik.math.statistics/)
-<header>
+<header align="right">
 <p>Студент: Федоров Н.С.</p>
 
 <p>Группа: 5362</p>
 
-<p align="right">Преподаватель: Медведев А.Н.</p>
+<p>Преподаватель: Медведев А.Н.</p>
 </header>
 
 ---
