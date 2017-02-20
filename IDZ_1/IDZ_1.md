@@ -9,11 +9,12 @@
 ---
 
 [ Отчет по ИДЗ ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
-    <font color="black">[-> 1](#Idz_1);</font>
-    [-> 2](#Idz_2);
-    [-> 3](#Idz_3);
-    [-> 4](#Idz_4);
-    [-> 5](#Idz_5);
+    
+     [-> 1](#Idz_1)
+     [-> 2](#Idz_2)
+     [-> 3](#Idz_3)
+     [-> 4](#Idz_4)
+     [-> 5](#Idz_5)
 
 ---
 
