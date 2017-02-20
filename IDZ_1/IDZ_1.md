@@ -176,12 +176,19 @@ AnnualDiameter<<-as.data.frame(read.csv("IDZ_1/annual-diameter-of-skirt-at-hem-.
 <tr><td></td><td>731.086956</td><td>51786.0811</td><td>-0.7350737</td><td>0.7727566</td></tr>
 <tr><td colspan="5"></td></tr></table>
 
+<table>
+<tr>
+<td>
 <h2 align="center">Гистограмма</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/hist.png"></img>
+<td>
 <h2 align="center">Эмпирические</h2>
 <img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/empiricalPlot.png"></img>
-</div>
+</td></tr></table>
 
+<p align="right"><b>Выводы:</b></p>
+<p align="right"><i>Данных недостаточно, чтобы делать выводы</i></p>
+----
 ```R
 # сохраняем результаты
 write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
