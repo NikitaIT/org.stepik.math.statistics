@@ -28,7 +28,9 @@
 
 ---
 
-#### <a name="Idz_1"></a>	ИДЗ №1
+### <a name="Idz_1"></a>	ИДЗ №1
+
+#### Данные
 
 Даны следующие распределения и параметры:
 
@@ -40,6 +42,8 @@
 
 
 Распределение в файле: [file](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/AnnualDiameterProp.csv)
+
+#### Выполнение работы
 
 Необходимо для каждого распределения:
 
