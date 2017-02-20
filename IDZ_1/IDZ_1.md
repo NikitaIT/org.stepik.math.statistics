@@ -11,6 +11,9 @@
 [ Отчет по ИДЗ ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
     
 [-> 1](#Idz_1)
+   [   -> Код {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ.R)
+   [   -> Данные {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/AnnualDiameterProp.csv)
+   [   -> Задание {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/%D0%97%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%209.2.2017.docx)
     
 [-> 2](#Idz_2)
     
@@ -33,7 +36,7 @@
 Отрицательное Биномиальное 	| m=32, p=1/5
 
 
-Распределение в файле: file
+Распределение в файле: [file](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/AnnualDiameterProp.csv)
 
 Необходимо для каждого распределения:
 
