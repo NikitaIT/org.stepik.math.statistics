@@ -2,8 +2,9 @@
 
 - [ Отчет 1 ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
 - [ Отчет 2 ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
+
 Тип Распределения			| Параметры
--------------------------------------------
+----------------------------|--------------
 Гамма						| p=10, b=5.3
 Нормальное					| a=2.3, σ=0.3
 Отрицательное Биномиальное 	| m=32, p=1/5
