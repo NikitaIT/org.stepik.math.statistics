@@ -10,7 +10,7 @@
 
 [ Отчет по ИДЗ ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
     
-[-> 1](#Idz_1)
+[-> 1. Нормальное, Гамма и N-Биомиальное распределения {отчет}](#Idz_1)
 
 [- -> Код {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ.R)
 
@@ -18,13 +18,13 @@
 
 [- -> Задание {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/%D0%97%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%209.2.2017.docx)
     
-[-> 2](#Idz_2)
+[-> 2.](#Idz_2)
     
-[-> 3](#Idz_3)
+[-> 3.](#Idz_3)
     
-[-> 4](#Idz_4)
+[-> 4.](#Idz_4)
     
-[-> 5](#Idz_5)
+[-> 5.](#Idz_5)
 
 ---
 
