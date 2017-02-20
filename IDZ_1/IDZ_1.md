@@ -1,11 +1,10 @@
 # [ Репозиторий Статистика ](https://github.com/NikitaIT/org.stepik.math.statistics/)
-<style type="text/css"> header{text-align: right;}</style>
 <header>
 <p>Студент: Федоров Н.С.</p>
 
 <p>Группа: 5362</p>
 
-<p>Преподаватель: Медведев А.Н.</p>
+<p align="right">Преподаватель: Медведев А.Н.</p>
 </header>
 
 ---
@@ -50,14 +49,17 @@
   n <- 1000;
   rG <<- rgamma(n = n, shape = 10, rate = 5.3);
   ...
-
+```
+```R
   #b. построить по данной выборке эмпирическую функцию распределения; 
   bildEmpiricalPlots <- function(){ empiricalPlot(rG); ... }
-
+```
+```R
   #  значения функции распределения в точке x
   funP <<- list(G = {function(x){ pgamma(q = x, shape = 10, rate = 5.3);}}, ... }
   );
-
+```
+```R
   #c&d.	сравнить гистограмму частот и реальную плотность данного распределения
   # точки для наложения
   ranges <- list(G = (((range(rG)[1]*100):(range(rG)[2]*100))/100), ... )
