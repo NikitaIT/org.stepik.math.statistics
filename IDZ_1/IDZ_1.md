@@ -1,4 +1,8 @@
-# Отчеты
+# [ Отчеты ](https://github.com/NikitaIT/org.stepik.math.statistics/)
+
+- [ Отчет 1 ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
+- [ Отчет 2 ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
+
 <div style="text-align: center;">
 <h1>Отчет 1</h1>
 <table style="margin:auto;text-align:center;border:1px solid black;">
