@@ -8,7 +8,7 @@
 
 ---
 
-[ Отчет по ИДЗ ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
+[ Отчеты по ИДЗ ](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/IDZ_1.md)
     
 [-> 1. Нормальное, Гамма и N-Биомиальное распределения {отчет}](#Idz_1)
     
