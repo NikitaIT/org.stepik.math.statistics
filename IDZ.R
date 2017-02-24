@@ -100,7 +100,7 @@ hist3 <- function(){
          breaks = 20,
          freq = F, 
          col = "lightblue",
-         xlab = "Темпиратура",
+         xlab = "Диаметр юбки",
          ylab = "Плотность вероятности",
          main = "rG Гистограмма, с кривой плотности"
     );
@@ -112,7 +112,7 @@ hist3 <- function(){
          breaks = 20, 
          freq = F, 
          col = "lightblue",
-         xlab = "Темпиратура",
+         xlab = "Диаметр юбки",
          ylab = "Плотность вероятности",
          main = "rN Гистограмма, с кривой плотности"
     );
@@ -124,7 +124,7 @@ hist3 <- function(){
          breaks = 20, 
          freq = F, 
          col = "lightblue",
-         xlab = "Темпиратура",
+         xlab = "Диаметр юбки",
          ylab = "Плотность вероятности",
          main = "NB Гистограмма, с кривой плотности"
     );
@@ -143,6 +143,13 @@ vars <- c(G = var(rG), N = var(rN), NB = var(rNB));
 asms <- c(G = asm(rG), N = asm(rN), NB = asm(rNB));
 #   выборочный эксцесс
 excs <- c(G = exc(rG), N = exc(rN), NB = exc(rNB));
+f
+
+mean = 2.3; sd = 0.3
+size = 32;prob = 1/5
+rbind(dG = allProp(rG) - c(mean = shape/k, var= shape/k^2,asm = 0.5332323,exc = 0.38232323),
+      dN = allProp(rN) - c(mean = mean, var= sd^2,asm = 0.05003010,exc = 0.019126277),
+      dNB = allProp(rNB) - c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
 
 #f.	сравнить результаты пункта 'e' с реальными характеристиками распределения 
 
@@ -150,6 +157,7 @@ meansReal <- c(G = mean(funP$G(ranges$G)), N = mean(funP$N(ranges$N)), NB = mean
 varsReal <- c(G = var(funP$G(ranges$G)), N = var(funP$N(ranges$N)), NB = var(funP$NB(ranges$N)));
 asmsReal <- c(G = asm(funP$G(ranges$G)), N = asm(funP$N(ranges$N)), NB = asm(funP$NB(ranges$N)));
 excsReal <- c(G = exc(funP$G(ranges$G)), N = exc(funP$N(ranges$N)), NB = exc(funP$NB(ranges$N)));
+
 
 
 t <- ?data.frame(meansReal,means,
