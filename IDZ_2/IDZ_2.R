@@ -36,3 +36,20 @@ all <- abs(allbind()-1)
 #является и выборочная дисперсия
 #при больших n , состоятельной оценкой дисперсии  
 #является и исправленная(не смещенная) выборочная дисперсия
+
+#выборка данных
+dir()
+setwd("../IDZ_2/")
+unif<<-as.data.frame(read.csv("unif_2.csv"));
+cauchy<<-as.data.frame(read.csv("cauchy_1.csv"));
+type<<-as.data.frame(read.csv("type1_1.csv"));
+#Необходимо построить оценку параметров, использую метод максимального правдоподобия.
+install.packages("fitdistrplus");
+library(fitdistrplus);
+#fitdist(data, distr, method="mle", start,...)
+mledist(data=unif$x, distr="unif", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(unif$x))
+mledist(data=cauchy$x, distr="cauchy", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(cauchy$x))
+
+

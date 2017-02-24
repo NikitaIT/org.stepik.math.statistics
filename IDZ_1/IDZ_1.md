@@ -95,10 +95,41 @@ x10000 | 0.01382609 | 0.01378747 | 0.01376773
 
 ----
 
+##### Оценка параметров, использую метод максимального правдоподобия.
 
+```R
+install.packages("fitdistrplus");
+library(fitdistrplus);
+```
+```R
+mledist(data=cauchy$x, distr="cauchy", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(cauchy$x))
+```
+$estimate — оценка неизвестных параметров.
 
+ location |  scale 
+----------|----------
+0.8619625 | 1.7134990 
 
+$convergence | 0 		 | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
+$loglik 	 | -15262.95 | значение логарифма функции правдоподобия при найденной оценке.
 
+$hessian  — значения гессиана.
+
+         |  location   |   scale
+---------|-------------|----------
+location | 846.786988  | 6.686417
+scale    |  6.686417   |856.165432
+
+```R
+ mledist(data=unif$x, distr="unif", optim.method="default",lower=-Inf, upper=Inf,start = formals(unif$x))
+```
+$estimate — оценка неизвестных параметров.
+   min    |   max 
+----------|----------
+-3.546441 | 4.104417 
+
+$convergence | 0 		 | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
 
 
 
