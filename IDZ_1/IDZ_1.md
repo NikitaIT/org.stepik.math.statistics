@@ -38,7 +38,9 @@
 [- -> Код {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/IDZ_2.R)
 
 [- -> Данные Коши распределения {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/cauchy_1.csv)
+
 [- -> Данные равномерного распределения {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/unif_2.csv)
+
 [- -> Данные искомого распределения{file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/type1_1.csv)
 
 [- -> Задание {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/%D0%97%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%209.2.2017.docx)
@@ -55,11 +57,12 @@
 
 #### Выполнение работы
 
+##### Выборочная дисперсия, несмещенная выборочная дисперсия, эффективная выборочная дисперсия.
+
 ```R
-#вычислить  следующие оценки дисперсии:  выборочную дисперсию, 
-#несмещенную выборочную дисперсию,  эффективную выборочную дисперсию. 
-vars<- function(x){sum((x-mean(x))^2)/(length(x))}
-varef<-function(x){(length(x)+1)*var(x)/(length(x))}
+vars  <- function(x){sum((x-mean(x))^2)/(length(x))}
+var   <- var
+varef <- function(x){(length(x)+1)*var(x)/(length(x))}
 ```
 Одна из 10 выборок средних по выборке:
 
@@ -70,8 +73,9 @@ x100   | 0.8201128  | 0.8283968  | 0.8366807
 x1000  | 1.0053878  | 1.0063942  | 1.0074006
 x10000 | 0.9976700  | 0.9977697  | 0.9978695
 
+##### Абсолютное значение отклонения(=1)
+
 ```R
-#абсолютное значение отклонения оценки от истинного значения (=1).
 varabs<- function(x){abs(allbind()-1)}
 ```
 В среднем для 10 средних по выборке:
@@ -165,7 +169,9 @@ x10000 | 0.01382609 | 0.01378747 | 0.01376773
 </table>
 
 <p align="right"><b>Выводы:</b></p>
-<p align="right"></p>
+<p align="right">Ну что тут скажешь, ничего особенного</p>
+
+----
 
 * c.	построить гистограмму частот;
 * d.	сравнить гистограмму частот и реальную плотность данного распределения (вычисление значения плотности в точке в пакете R описано на той же 19 стр.)
