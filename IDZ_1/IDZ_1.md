@@ -105,15 +105,16 @@ library(fitdistrplus);
 mledist(data=cauchy$x, distr="cauchy", optim.method="default",
         lower=-Inf, upper=Inf,start = formals(cauchy$x))
 ```
+
+$convergence | 0 		 | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
+-------------|-----------|---------------------------------------------------------------
+$loglik 	 | -15262.95 | значение логарифма функции правдоподобия при найденной оценке.
+
 $estimate — оценка неизвестных параметров.
 
  location |  scale 
 ----------|----------
 0.8619625 | 1.7134990 
-
-$convergence | 0 		 | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
--------------|-----------|---------------------------------------------------------------
-$loglik 	 | -15262.95 | значение логарифма функции правдоподобия при найденной оценке.
 
 $hessian  — значения гессиана.
 
@@ -121,6 +122,8 @@ $hessian  — значения гессиана.
 ---------|-------------|----------
 location | 846.786988  | 6.686417
 scale    |  6.686417   |856.165432
+
+<p align="right"><i>Гессиан положительно определён => найдена точка локального минимума функции.</i></p></p>
 
 ```R
  mledist(data=unif$x, distr="unif", optim.method="default",lower=-Inf, upper=Inf,start = formals(unif$x))
@@ -132,6 +135,19 @@ $estimate — оценка неизвестных параметров.
 ----------|----------
 -3.546441 | 4.104417 
 
+##### Предположение о неизвестном распределении.
+
+```R
+par(mfrow=c(2,2))
+hist(type$x,breaks = 2*length(type$x)^(1/3), freq = F, col = "lightblue");
+hist(rnorm(n = 10^6, mean = 0, sd = 1),freq = F, col = "lightblue");
+hist(rcauchy(n = 10^2,0,0.1),breaks = 50,freq = F, col = "lightblue");
+hist(rt(n = 10^2,df=1),breaks = 50,freq = F, col = "lightblue");
+```
+
+<p align="right"><b>Предположение:</b></p>
+<p align="right"><i>Коши или нормальное, т.к. тяжелые хвосты и холм</i></p></p>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/4hist.png"></img>
 
 
 

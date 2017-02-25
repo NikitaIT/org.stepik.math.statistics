@@ -52,4 +52,12 @@ mledist(data=unif$x, distr="unif", optim.method="default",
 mledist(data=cauchy$x, distr="cauchy", optim.method="default",
         lower=-Inf, upper=Inf,start = formals(cauchy$x))
 
-
+par(mfrow=c(2,2))
+hist(type$x,breaks = 2*length(type$x)^(1/3), freq = F, col = "lightblue");
+hist(rnorm(n = 10^6, mean = 0, sd = 1),freq = F, col = "lightblue");
+hist(rcauchy(n = 10^2,0,0.5),breaks = 50,freq = F, col = "lightblue");
+# оши или нормальное, т.к. т€желые хвосты
+hist(cauchy$x, 
+     breaks = 20,
+     freq = F, 
+     col = "lightblue");
