@@ -14,6 +14,7 @@ library(ggvis)
 library(ggplot2)
 
 #init
+set.seed(123)
 n = 1000
 normal_mean = -2
 normal_sd = 0.25
@@ -39,6 +40,7 @@ ggplot(as.data.frame(list(no = normal)), aes(x = no,y = ..density..)) +
   # задаем вертикальные линии
   geom_vline(xintercept = as.vector(summary(normal)), colour = "red")
 
+
 # квантили для нормального и t-стьюдента
 dataset$qnorm = sapply(1-a/2,qnorm)
 dataset$qt = sapply(1-a/2,qt,n-1)# qt(p,df,...)
@@ -60,4 +62,23 @@ dataset$intervalRightD = M + sqrt(normal_sd/n)*dataset$qnorm;
 ###e.	Считая  мат. ожид. а известным,  постройте асимптотический  доверительный интервал для s на базе ОМП. Сравните с результатом пункта c).
 dataset$intervalLeftE = var(normal)-sqrt(2/n)*dataset$qnorm*var(normal);
 dataset$intervalRightE = var(normal) + sqrt(2/n)*dataset$qnorm*var(normal);
-s
+
+ss=10
+dataset$a=as.factor(a)
+ggplot(data.frame(a=a,i = dataset$intervalRightA),aes(x = i,y = a,colour = 1), size = ss*1)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightB), colour = 2,size=ss*0.9)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightC), colour = 3,size=ss*0.8)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightD), colour = 4,size=ss*0.7)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightE), colour = 5,size=ss*0.6)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftA), colour = 6,size=ss*0.5)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftB), colour = 7,size=ss*0.4)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftC), colour = 8,size=ss*0.3)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftD), colour = 9,size=ss*0.2)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftE), colour = 10,size=ss*0.1)+
+  geom_vline(xintercept = as.vector(var(normal)), colour = "red")+
+  geom_vline(xintercept = as.vector(M), colour = "green")+
+  labs(x = "Уровень значимости. Зеленая линия - мат ож, Красная - дисперсия",
+       y = "Величина распределения ",
+       title = "Птички на ветке.")
+dataset$a=NULL
+

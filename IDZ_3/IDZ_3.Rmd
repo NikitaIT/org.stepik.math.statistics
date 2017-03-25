@@ -3,12 +3,12 @@ title: "IDZ_3"
 author: "Nikita"
 date: "23.03.17"
 output:
-  html_document:
-    toc_float: yes
+  word_document: default
   pdf_document:
     keep_tex: yes
     toc: yes
-  word_document: default
+  html_document:
+    toc_float: yes
 params:
   bibliography: bibl.bib
   urlcolor: blue
@@ -209,6 +209,28 @@ data.frame(row.names = a,"E minus C" = abs(dataset$intervalLeftE-dataset$interva
 data.frame(row.names = a,"D minus A" = abs(dataset$intervalLeftA-dataset$intervalLeftA))
 ```
 Как видим значимых отличий нет.
+
+То же видим на графике
+```{r}
+ss=10
+dataset$a=as.factor(a)
+ggplot(data.frame(a=a,i = dataset$intervalRightA),aes(x = i,y = a,colour = 1), size = ss*1)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightB), colour = 2,size=ss*0.9)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightC), colour = 3,size=ss*0.8)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightD), colour = 4,size=ss*0.7)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightE), colour = 5,size=ss*0.6)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftA), colour = 6,size=ss*0.5)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftB), colour = 7,size=ss*0.4)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftC), colour = 8,size=ss*0.3)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftD), colour = 9,size=ss*0.2)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftE), colour = 10,size=ss*0.1)+
+  geom_vline(xintercept = as.vector(var(normal)), colour = "red")+
+  geom_vline(xintercept = as.vector(M), colour = "green")+
+  labs(x = "Уровень значимости. Зеленая линия - мат ож, Красная - дисперсия",
+       y = "Величина распределения ",
+       title = "Птички на ветке.")
+dataset$a=NULL
+```
 
 ##  Асимптотические  доверительные интервалы на базе ОМП
 
