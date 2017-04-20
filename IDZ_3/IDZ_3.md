@@ -1,67 +1,26 @@
----
-title: "IDZ_3"
-author: "Nikita"
-date: "23.03.17"
-output:
-  html_document:
-    keep_md: yes
-    output: null
-    toc_float: yes0
-  pdf_document:
-    keep_tex: yes
-    toc: yes
-  word_document: default
-params:
-  bibliography: bibl.bib
-  urlcolor: blue
----
+# IDZ_3
+Nikita  
+23.03.17  
 
-```{r setup, include=FALSE}
-library(dplyr)
-library(tidyr)
-library(xtable)
-library(ggvis)
-library(ggplot2)
 
-options(scipen = 0, digits = 3)
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
-```
 
 # Построение доверительных интервалов.
 
-```{r init, cache=TRUE}
-set.seed(123)
-n = 1000
-normal_mean = -2
-normal_sd = 0.25
-a = c(0.25, 0.1, 0.05, 0.01)
-p_values = 1 - a
-dataset = data.frame(row.names = a)
-normal<-rnorm(n,normal_mean,sqrt(normal_sd))
-M = mean(normal)
-```
+
 
 ##Доверительные интервалы для параметров нормального распределения. 
 
-Постройте выборку длины `r n` из нормального распределения N (μ = `r normal_mean`,σ = `r normal_sd`) (параметры выбираете самостоятельно) Для различных уровней значимости (`r paste0("a = ", paste0(a, sep = "", collapse = ", a = "))`)
+Постройте выборку длины 1000 из нормального распределения N (μ = -2,σ = 0.25) (параметры выбираете самостоятельно) Для различных уровней значимости (a = 0.25, a = 0.1, a = 0.05, a = 0.01)
 
 
 $$f(x)={\tfrac {1}{\sigma {\sqrt {2\pi }}}}\;e^{-{\frac {(x-\mu )^{2}}{2\sigma ^{2}}}}$$
-```{r graph}
-summary(normal)
 
-ggplot(as.data.frame(list(no = normal)), aes(x = no,y = ..density..)) + 
-  labs(x = "Значения",
-       y = "Плотность",
-       title = "Выборочное распределение") +
-  geom_histogram(bins = 30,colour = "darkgreen", fill = "white") + 
-  geom_density(alpha = 0.2,fill = "lightgreen",colour = "darkgreen")+
-  # задаем отметки на оси x
-  scale_x_continuous(breaks = as.vector(summary(normal)), 
-                     labels = c(names(summary(normal))))+
-  # задаем вертикальные линии
-  geom_vline(xintercept = as.vector(summary(normal)), colour = "red")
 ```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   -3.40   -2.31   -2.00   -1.99   -1.67   -0.38
+```
+
+![](README_figs/README-graph-1.png)<!-- -->
 
 ####Определение
 
@@ -72,11 +31,13 @@ ggplot(as.data.frame(list(no = normal)), aes(x = no,y = ..density..)) +
 т.е. с $(1-a)*100%$ вероятностью мы уверены, что интервал $\mu \pm interval$ у выборки включает среднее ГС.
 
 Значения квантилей:
-```{r}
-# квантили для нормального и t-стьюдента
-dataset$qnorm = sapply(1-a/2,qnorm)
-dataset$qt = sapply(1-a/2,qt,n-1)# qt(p,df,...)
-select(dataset, qnorm, qt)
+
+```
+##      qnorm   qt
+## 0.25  1.15 1.15
+## 0.1   1.64 1.65
+## 0.05  1.96 1.96
+## 0.01  2.58 2.58
 ```
 Чем меньше уровень значимости, тем шире интервал.
 
@@ -95,11 +56,13 @@ $$\mathbb {P} \left(-z_{1-{\frac {\alpha }{2}}}\leq Z\leq z_{1-{\frac {\alpha }{
 $$ \mathbb {P} \left({\bar {X}}-z_{1-{\frac {\alpha }{2}}}{\frac {\sigma }{\sqrt {n}}}\leq \mu \leq {\bar {X}}+z_{1-{\frac {\alpha }{2}}}{\frac {\sigma }{\sqrt {n}}}\right)=1-\alpha$$
 Интервалы:
 
-```{r}
-# a.  Считая  дисперсию(s) известной,  постройте доверительный интервал для мат ож(a).
-dataset$intervalLeftA = M-dataset$qnorm*sqrt(normal_sd/n)
-dataset$intervalRightA = M+dataset$qnorm*sqrt(normal_sd/n)
-select(dataset, Left = intervalLeftA, Right=intervalRightA)
+
+```
+##       Left Right
+## 0.25 -2.01 -1.97
+## 0.1  -2.02 -1.97
+## 0.05 -2.02 -1.96
+## 0.01 -2.03 -1.95
 ```
 
 
@@ -115,11 +78,13 @@ $$\mathbb {P} \left(-t_{1-{\frac {\alpha }{2}},n-1}\leq T\leq t_{1-{\frac {\alph
 $$\mathbb {P} \left({\bar {X}}-t_{1-{\frac {\alpha }{2}},n-1}{\frac {S}{\sqrt {n}}}\leq \mu \leq {\bar {X}}+t_{1-{\frac {\alpha }{2}},n-1}{\frac {S}{\sqrt {n}}}\right)=1-\alpha$$
 Интервалы:
 
-```{r}
-#b.	Считая  дисперсию(s) неизвестной,  постройте доверительный интервал для мат ож(a).
-dataset$intervalLeftB = M-dataset$qt*sqrt(var(normal)/n);
-dataset$intervalRightB = M+dataset$qt*sqrt(var(normal)/n);
-select(dataset, Left = intervalLeftB, Right=intervalRightB)
+
+```
+##       Left Right
+## 0.25 -2.01 -1.97
+## 0.1  -2.02 -1.97
+## 0.05 -2.02 -1.96
+## 0.01 -2.03 -1.95
 ```
 
 ###c.  Постройте доверительный интервал для дисперсии.
@@ -138,11 +103,13 @@ $$ \mathbb {P} \left(\chi _{{\frac {1-\alpha }{2}},n-1}^{2}\leqslant H\leqslant 
 $$ \mathbb {P} \left({\frac {(n-1)S^{2}}{\chi _{{\frac {1+\alpha }{2}},n-1}^{2}}}\leqslant \sigma ^{2}\leqslant {\frac {(n-1)S^{2}}{\chi _{{\frac {1-\alpha }{2}},n-1}^{2}}}\right)=\alpha$$
 
 
-```{r}
-# c.  Постройте доверительный интервал для дисперсии(s).
-dataset$intervalLeftC = (n*normal_sd)/qchisq(1-a/2,n-1)
-dataset$intervalRightC = (n*normal_sd)/qchisq(a/2,n-1)
-select(dataset, Left = intervalLeftC, Right=intervalRightC)
+
+```
+##       Left Right
+## 0.25 0.238 0.264
+## 0.1  0.233 0.270
+## 0.05 0.230 0.274
+## 0.01 0.224 0.282
 ```
 ###d.	Считая  дисперсию s известной,  постройте асимптотический  доверительный интервал для a на базе ОМП. Сравните с результатом пункта a).
 Если эксперимент регулярный, то ОМП $\bar θ_n$ параметра $θ$ является
@@ -163,12 +130,13 @@ $$[ θ_n − I( θ_n)^{−1 /2} x_{\alpha} , θ_n + I( θ_n)^{−1 /2} x_{\alpha
 построим асимптотический доверительный интервал для среднего:
 $$[X−\frac {(sx_α)}{\sqrt n}, X+\frac {(sx_α)}{\sqrt n} ]$$
 
-```{r}
-#d.	Считая  дисперсию s известной,  постройте асимптотический 
-#доверительный интервал для a на базе ОМП. Сравните с результатом пункта a).
-dataset$intervalLeftD = M-sqrt(normal_sd/n)*dataset$qnorm;
-dataset$intervalRightD = M + sqrt(normal_sd/n)*dataset$qnorm;
-select(dataset, Left = intervalLeftD, Right=intervalRightD)
+
+```
+##       Left Right
+## 0.25 -2.01 -1.97
+## 0.1  -2.02 -1.97
+## 0.05 -2.02 -1.96
+## 0.01 -2.03 -1.95
 ```
 
 ###e.	Считая  мат. ожид. а известным,  постройте асимптотический  доверительный интервал для s на базе ОМП. Сравните с результатом пункта c).
@@ -193,49 +161,42 @@ $$[ θ_n − I( θ_n)^{−1 /2} x_{\alpha} , θ_n + I( θ_n)^{−1 /2} x_{\alpha
  $$[s^2−\sqrt \frac {2}{n} s^2 x_\alpha, s^2+\sqrt \frac {2}{n} s^2 x_\alpha]$$
 
 
-```{r}
-###e.	Считая  мат. ожид. а известным,  постройте асимптотический  доверительный интервал для s на базе ОМП. Сравните с результатом пункта c).
-dataset$intervalLeftE = var(normal)-sqrt(2/n)*dataset$qnorm*var(normal);
-dataset$intervalRightE = var(normal) + sqrt(2/n)*dataset$qnorm*var(normal);
-select(dataset, Left = intervalLeftE, Right=intervalRightE)
+
+```
+##       Left Right
+## 0.25 0.233 0.259
+## 0.1  0.228 0.264
+## 0.05 0.224 0.267
+## 0.01 0.218 0.274
 ```
 
 ###  Сравнение E c C
-```{r}
-data.frame(row.names = a,"E minus C" = abs(dataset$intervalLeftE-dataset$intervalLeftC))
+
+```
+##      E.minus.C
+## 0.25   0.00474
+## 0.1    0.00507
+## 0.05   0.00536
+## 0.01   0.00609
 ```
 Как видим значимых отличий нет.
 
 ###  Сравнение D c A
-```{r}
-data.frame(row.names = a,"D minus A" = abs(dataset$intervalLeftA-dataset$intervalLeftA))
+
+```
+##      D.minus.A
+## 0.25         0
+## 0.1          0
+## 0.05         0
+## 0.01         0
 ```
 Как видим значимых отличий нет.
 
 То же видим на графике
-```{r}
-ss=10
-dataset$a=as.factor(a)
-ggplot(data.frame(a=a,i = dataset$intervalRightA),aes(x = i,y = a,colour = 1), size = ss*1)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalRightB), colour = 2,size=ss*0.9)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalRightC), colour = 3,size=ss*0.8)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalRightD), colour = 4,size=ss*0.7)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalRightE), colour = 5,size=ss*0.6)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalLeftA), colour = 6,size=ss*0.5)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalLeftB), colour = 7,size=ss*0.4)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalLeftC), colour = 8,size=ss*0.3)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalLeftD), colour = 9,size=ss*0.2)+
-  geom_point(data = data.frame(a=a,i = dataset$intervalLeftE), colour = 10,size=ss*0.1)+
-  geom_vline(xintercept = as.vector(var(normal)), colour = "red")+
-  geom_vline(xintercept = as.vector(M), colour = "green")+
-  labs(x = "Уровень значимости. Зеленая линия - мат ож, Красная - дисперсия",
-       y = "Величина распределения ",
-       title = "Птички на ветке.")
-dataset$a=NULL
-```
+![](README_figs/README-unnamed-chunk-9-1.png)<!-- -->
 
 ##  Асимптотические  доверительные интервалы на базе ОМП
 
-На основании оценок, полученных в предыдущем ДЗ (задания 2 и 3), постройте асимптотические доверительные интервалы уровней значимости(`r paste0("a = ", paste0(a, sep = "", collapse = ", a = "))`).
+На основании оценок, полученных в предыдущем ДЗ (задания 2 и 3), постройте асимптотические доверительные интервалы уровней значимости(a = 0.25, a = 0.1, a = 0.05, a = 0.01).
 
 Я еще не доделал то идз, чтобы сделать эту часть))
