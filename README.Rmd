@@ -1,0 +1,77 @@
+---
+title: ""
+author: ""
+date: ""
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
+```
+
+<br/>
+<br/>
+<br/>
+<h3 align="center">Санкт-Петербургский государственный электротехнический <br/> университет «ЛЭТИ»</h3>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<h3 align="center">Отчеты по курсу: <br/> Теория вероятностей и математическая статистика</h3>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<p align="right">Студент: Федоров Н.С.</p>
+
+<p align="right">Группа: 5362</p>
+
+<p align="right">Преподаватель: Медведев А.Н.</p>
+
+
+
+---
+
+<h1 align="center"> Оглавление</h1>
+   
+<h3 align="center">[ Репозиторий: Статистика ](https://github.com/NikitaIT/org.stepik.math.statistics/)</h3>
+   
+   
+[-> 1. Нормальное, Гамма и N-Биомиальное распределения](#Idz_1)
+    
+[-> 2. Оценки, Метод максимального правдоподобия](#Idz_2)
+    
+[-> 3. {отчет}](#Idz_3)
+    
+[-> 4. {отчет}](#Idz_4)
+    
+[-> 5. {отчет}](#Idz_5)
+
+---

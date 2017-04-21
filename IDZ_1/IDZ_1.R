@@ -4,11 +4,6 @@
 # @link https://www.dropbox.com/sh/lnrmixhxjlvq72g/AABfBdX0y8r2f_BOAn3ffcI-a?dl=0
 # @data annual-diameter-of-skirt-at-hem-.csv
 
-install.packages("ggplot2");
-install.packages("stargazer");
-library(ggplot2)
-library(stargazer);
-mustHave <- function(){
   #   выборочный эксцесс
   exc<<-function(x){
     sum((x-mean(x))^4)/length(x)/var(x)^2-3;
@@ -19,38 +14,22 @@ mustHave <- function(){
   }
   #   все характеристики
   allProp <<- function(x){ data.frame(mean = mean(x),var = var(x),asm = asm(x),exc = exc(x))}
-  
-  empiricalFun<<-function(x,t){z<-x[x<t]; length(z)/length(x)}
-  empiricalPlot<<-function(x){
-    xu<-unique(sort(x));
-    yu<-0; 
-    for(i in 1:length(xu)) yu[i]<-empiricalFun(x,xu[i]);
-    yu[length(xu)+1]<-1
-    z<-stepfun(xu,yu);
-    plot.ecdf(z,col.01line = "red",col="green",main = "plotE");
-  }
-}
-mustHave();
 
 #init
-init <- function(){
-  AnnualDiameter<<-as.data.frame(read.csv("IDZ_1/annual-diameter-of-skirt-at-hem-.csv",col.names = c("AnnualDiameter")));
-  
+  AnnualDiameter<<-as.data.frame(read.csv("annual-diameter-of-skirt-at-hem-.csv",col.names = c("AnnualDiameter")));
+  set.seed(100);
   #a.	сгенерировать выборку длины 1000 из данного распределения (стр. 19)
-  n <- 1000;
-  rG <<- rgamma(n = n, shape = 10, rate = 5.3);
-  rN <<- rnorm(n = n, mean = 2.3, sd = 0.3);
-  rNB <<- rnbinom(n = n, size = 32,prob = 1/5);
-  #   значения функции распределения в точке x
-  funP <<- list(G = {function(x){ pgamma(q = x, shape = 10, rate = 5.3);}},
-                N = {function(x){ pnorm(q = x, mean = 2.3, sd = 0.3);}},
-                NB = {function(x){ pnbinom(q = x, size = 32,prob = 1/5);}}
-  );
-}
-init();
+  n = 1000;
+  propG = list(shape = 10, rate = 5.3);
+  propN = list(mean = 2.3, sd = 0.3);
+  propNB = list(size = 32,prob = 1/5);
+  rG = rgamma(n = n, shape = 10, rate = 5.3);
+  rN = rnorm(n = n, mean = 2.3, sd = 0.3);
+  rNB = rnbinom(n = n, size = 32,prob = 1/5);
+  distributions = list(rG=rG,rN=rN,rNB=rNB);
 
 # Выборка с темпиратурой
-empiricalPlot(AnnualDiameter$AnnualDiameter);
+plot.ecdf(AnnualDiameter$AnnualDiameter,col.01line = "red",col="green",main = "Empirical Plot AnnualDiameter");
 
 hist(AnnualDiameter$AnnualDiameter, 
      breaks = 20,
@@ -66,13 +45,7 @@ write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
 # конец выборки с темпиратурой
 
 #b.	построить по данной выборке эмпирическую функцию распределения;
-bildEmpiricalPlots <- function(){
-  empiricalPlot(rG);
-  empiricalPlot(rN);
-  empiricalPlot(rNB);
-}
-bildEmpiricalPlots();
-
+lapply(distributions,FUN = plot.ecdf,col.01line = "red",col="green")
 
 #c.	построить гистограмму частот;
 
@@ -133,42 +106,19 @@ hist3 <- function(){
   }
 }
 hist3();
-#e.	вычислить следующие выборочные характеристики(стр.20-22):  
+#e.	вычислить выборочные характеристики(стр.20-22):  
+distributionsProp = t(sapply(distributions,allProp))
 
-#   выборочное среднее
-means <- c(G = mean(rG), N = mean(rN), NB = mean(rNB));
-#   выборочную дисперсию
-vars <- c(G = var(rG), N = var(rN), NB = var(rNB));
-#   выборочную асимметрию
-asms <- c(G = asm(rG), N = asm(rN), NB = asm(rNB));
-#   выборочный эксцесс
-excs <- c(G = exc(rG), N = exc(rN), NB = exc(rNB));
-f
 
-mean = 2.3; sd = 0.3
-size = 32;prob = 1/5
-rbind(dG = allProp(rG) - c(mean = shape/k, var= shape/k^2,asm = 0.5332323,exc = 0.38232323),
-      dN = allProp(rN) - c(mean = mean, var= sd^2,asm = 0.05003010,exc = 0.019126277),
-      dNB = allProp(rNB) - c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
+expectedProp = rbind(rG =  c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
+                  rN =  c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
+                  rNB =  c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
 
 #f.	сравнить результаты пункта 'e' с реальными характеристиками распределения 
 
-meansReal <- c(G = mean(funP$G(ranges$G)), N = mean(funP$N(ranges$N)), NB = mean(funP$NB(ranges$N)));
-varsReal <- c(G = var(funP$G(ranges$G)), N = var(funP$N(ranges$N)), NB = var(funP$NB(ranges$N)));
-asmsReal <- c(G = asm(funP$G(ranges$G)), N = asm(funP$N(ranges$N)), NB = asm(funP$NB(ranges$N)));
-excsReal <- c(G = exc(funP$G(ranges$G)), N = exc(funP$N(ranges$N)), NB = exc(funP$NB(ranges$N)));
+deltaProp = rbind(rG = allProp(rG)  - c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
+                  rN = allProp(rN) - c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
+                  rNB = allProp(rNB)  - c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
 
+write.csv(distributionsProp,file = "tProp.csv")
 
-
-t <- ?data.frame(meansReal,means,
-                 varsReal,vars,
-                 asmsReal,asms,
-                 excsReal,excs)
-t
-write.csv(t,file = "tProp.csv")
-
-mean = 2.3; sd = 0.3
-size = 32;prob = 1/5
-rbind(dG = allProp(rG) - c(mean = shape/k, var= shape/k^2,asm = 0.5332323,exc = 0.38232323),
-      dN = allProp(rN) - c(mean = mean, var= sd^2,asm = 0.05003010,exc = 0.019126277),
-      dNB = allProp(rNB) - c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))

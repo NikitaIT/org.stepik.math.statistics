@@ -1,0 +1,206 @@
+---
+title: "IDZ 2"
+author: "Nikita Fiodorov"
+date: "21.04.17"
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
+```
+
+<a name="Idz_1"></a>
+
+[- -> Код {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/IDZ_2.R)
+
+[- -> Данные Коши распределения {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/cauchy_1.csv)
+
+[- -> Данные равномерного распределения {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/unif_2.csv)
+
+[- -> Данные искомого распределения{file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/type1_1.csv)
+
+[- -> Задание {file}](https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_1/%D0%97%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%209.2.2017.docx)
+
+### Данные
+
+Даны следующие распределения и параметры:
+
+Тип Распределения			      | Параметры
+----------------------------|--------------
+Коши						            | a in R, b > 0 
+Равномерное				        	| a ≤ b
+Искомое					 	          | ??
+
+### Выполнение работы
+
+#### Выборочная дисперсия, несмещенная выборочная дисперсия, эффективная выборочная дисперсия.
+
+```{r init, cache=TRUE}
+set.seed(123)
+n = 1000
+normal_mean = -2
+normal_sd = 0.25
+a = c(0.25, 0.1, 0.05, 0.01)
+p_values = 1 - a
+dataset = data.frame(row.names = a)
+normal<-rnorm(n,normal_mean,sqrt(normal_sd))
+M = mean(normal)
+```
+
+```R
+vars  <- function(x){sum((x-mean(x))^2)/(length(x))}
+var   <- var
+varef <- function(x){(length(x)+1)*var(x)/(length(x))}
+```
+Одна из 10 выборок средних по выборке:
+
+       |    vars    |     var    |    varef
+-------|------------|------------|------------
+x10    | 0.5970598  | 0.6633998  | 0.7297398
+x100   | 0.8201128  | 0.8283968  | 0.8366807
+x1000  | 1.0053878  | 1.0063942  | 1.0074006
+x10000 | 0.9976700  | 0.9977697  | 0.9978695
+
+#### Абсолютное значение отклонения(=1)
+
+```R
+varabs<- function(x){abs(allbind()-1)}
+```
+В среднем для 10 средних по выборке:
+
+       |    vars    |     var    |    varef
+-------|------------|------------|------------
+x10    | 0.34654800 | 0.33488905 | 0.32837795
+x100   | 0.12398427 | 0.12725684 | 0.13052941
+x1000  | 0.03461316 | 0.03384700 | 0.03308085
+x10000 | 0.01382609 | 0.01378747 | 0.01376773
+
+<p align="right"><b>Выводы:</b></p>
+<p align="right"><i>При больших n, асимптотически эффективной оценкой дисперсии 
+является выборочная дисперсия. </i></p></p>
+<p align="right"><i>При больших n, состоятельной оценкой дисперсии 
+является исправленная(не смещенная) выборочная дисперсия.</i></p></p>
+
+----
+
+#### Оценка параметров, использую метод максимального правдоподобия.
+
+```R
+install.packages("fitdistrplus");
+library(fitdistrplus);
+```
+
+#### Сравнение с Коши
+
+```R
+mledist(data=cauchy$x, distr="cauchy", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(cauchy$x))
+```
+
+$convergence | 0 		     | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
+-------------|-----------|---------------------------------------------------------------
+$loglik 	   | -15262.95 | значение логарифма функции правдоподобия при найденной оценке.
+
+$estimate — оценка неизвестных параметров.
+
+ location |  scale 
+----------|----------
+0.8619625 | 1.7134990 
+
+$hessian  — значения гессиана.
+
+         |  location   |   scale
+---------|-------------|----------
+location | 846.786988  | 6.686417
+scale    |  6.686417   |856.165432
+
+<p align="right"><i>Гессиан положительно определён => найдена точка локального минимума функции.</i></p></p>
+
+#### Сравнение с Равномерным
+
+```R
+ mledist(data=unif$x, distr="unif", optim.method="default",lower=-Inf, upper=Inf,start = formals(unif$x))
+```
+
+$estimate — оценка неизвестных параметров.
+
+   min    |   max 
+----------|----------
+-3.546441 | 4.104417 
+
+#### Предположение о неизвестном распределении.
+
+```R
+par(mfrow=c(2,2))
+hist(type$x,breaks = 2*length(type$x)^(1/3), freq = F, col = "lightblue");
+hist(rnorm(n = 10^6, mean = 0, sd = 1),freq = F, col = "lightblue");
+hist(rcauchy(n = 10^2,0,0.1),breaks = 50,freq = F, col = "lightblue");
+hist(rt(n = 10^2,df=1),breaks = 50,freq = F, col = "lightblue");
+```
+
+<p align="right"><b>Предположение:</b></p>
+<p align="right"><i>Коши или нормальное, т.к. тяжелые хвосты и холм</i></p></p>
+<img src="https://github.com/NikitaIT/org.stepik.math.statistics/blob/master/IDZ_2/4hist.png"></img>
+
+#### Сравнение с Коши
+
+$convergence | 0 		     | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
+-------------|-----------|---------------------------------------------------------------
+$loglik 	   | -10602.14 | значение логарифма функции правдоподобия при найденной оценке.
+
+$estimate — оценка неизвестных параметров.
+  
+  location  |   scale 
+------------|------------
+0.005305155 | 0.557106252 
+
+$hessian  — значения гессиана.
+
+         |  location   |   scale
+---------|-------------|-----------
+location |  7873.4342  | 271.3909
+scale    |  271.3909   | 14680.6293
+
+<p align="right"><i>Гессиан положительно определён => найдена точка локального минимума функции.</i></p></p>
+
+
+#### Сравнение с нормальным
+
+$convergence | 0 		     | успешно найдены оценки параметров 0-10 Y-N и коды-ошибки
+-------------|-----------|---------------------------------------------------------------
+$loglik 	   | -9883.392 | значение логарифма функции правдоподобия при найденной оценке.
+
+$estimate
+
+    mean    |     sd 
+------------|-----------
+-0.05462364 | 0.99299918 
+
+
+$hessian — значения гессиана.
+
+     |   mean  |    sd
+-----|---------|----------
+mean | 7099.05 |    0.00
+sd   |   0.00  | 14198.23
+
+<p align="right"><i>Гессиан положительно определён => найдена точка локального минимума функции.</i></p></p>

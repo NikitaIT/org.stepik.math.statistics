@@ -11,6 +11,7 @@ output:
     keep_tex: yes
     toc: yes
   word_document: default
+  github_document: rmarkdown::github_document
 params:
   bibliography: bibl.bib
   urlcolor: blue

@@ -1,32 +1,8 @@
----
-title: "IDZ 1"
-author: "Nikita Fiodorov"
-date: "21.04.17"
-output:
-  html_document:
-    keep_md: yes
-    output: null
-    toc_float: yes0
-  pdf_document:
-    keep_tex: yes
-    toc: yes
-  word_document: default
-  github_document: rmarkdown::github_document
-params:
-  bibliography: bibl.bib
-  urlcolor: blue
----
+# IDZ 1
+Nikita Fiodorov  
+21.04.17  
 
-```{r setup, include=FALSE}
-library(dplyr)
-library(tidyr)
-library(xtable)
-library(ggvis)
-library(ggplot2)
-set.seed(100);
-options(scipen = 0, digits = 3)
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
-```
+
 
 <p align="right"><i>Из этой первой лекции по теории вероятностей я запомнил толь-</i></p>
 <p align="right"><i>ко полузнакомый термин «математическое ожидание». Незнакомец</i></p>
@@ -66,36 +42,22 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = 
 
 ### Выполнение работы
 
-```{r func}
-  #   выборочный эксцесс
-  exc<<-function(x){
-    sum((x-mean(x))^4)/length(x)/var(x)^2-3;
-  }
-  #   выборочную асимметрию
-  asm <<- function(x){
-    sum((x-mean(x))^3)/length(x)/var(x)^(3/2)
-  }
-  #   все характеристики
-  allProp <<- function(x){ data.frame(mean = mean(x),var = var(x),asm = asm(x),exc = exc(x))}
-```
+
 
 
 Необходимо для каждого распределения:
 
 **a.	сгенерировать выборку длины 1000 из данного распределения (см. стр. 19 методички)**
 
-```{r }
-  #a.	сгенерировать выборку длины 1000 из данного распределения (стр. 19)
-  n = 1000;
-  propG = list(shape = 10, rate = 5.3);
-  propN = list(mean = 2.3, sd = 0.3);
-  propNB = list(size = 32,prob = 1/5);
-  rG = rgamma(n = n, shape = 10, rate = 5.3);
-  rN = rnorm(n = n, mean = 2.3, sd = 0.3);
-  rNB = rnbinom(n = n, size = 32,prob = 1/5);
-  distributions = list(rG=rG,rN=rN,rNB=rNB);
-  sapply(distributions,summary)
-  
+
+```
+##            rG   rN rNB
+## Min.    0.509 1.24  57
+## 1st Qu. 1.450 2.09 110
+## Median  1.850 2.28 126
+## Mean    1.890 2.30 128
+## 3rd Qu. 2.260 2.50 142
+## Max.    5.130 3.31 208
 ```
 
 **b.	построить по данной выборке эмпирическую функцию распределения;**
@@ -105,10 +67,7 @@ $$\hat{F}_m(x)\;=\;\frac{1}{m}\sum_{i=1}^m I_{\left\{x_i\leq x\right\}}.$$
 
 <h2 align="center">Эмпирические для rG, rN, rNB</h2>
 
-```{r }
-  #b. построить по данной выборке эмпирическую функцию распределения; 
-  ww = lapply(distributions,FUN = plot.ecdf,col.01line = "red",col="green")
-```
+![](README_figs/README-unnamed-chunk-2-1.png)<!-- -->![](README_figs/README-unnamed-chunk-2-2.png)<!-- -->![](README_figs/README-unnamed-chunk-2-3.png)<!-- -->
 
 
 
@@ -124,70 +83,14 @@ $$\hat{F}_m(x)\;=\;\frac{1}{m}\sum_{i=1}^m I_{\left\{x_i\leq x\right\}}.$$
 
 ${\displaystyle {\tilde {h}}(x)={\frac {n_{i}}{n\Delta a_{i}}},\Delta a_{i}=a_{i}-a_{i-1},\;i=1,\ldots ,k\;}$, — называется нормализованной гистограммой.
 
-```{r }
-#d.	сравнить гистограмму частот и реальную плотность данного распределения 
-#  (вычисление значения плотности в точке 19 стр.)
-#
 
-ranges <- list(G = (((range(rG)[1]*100):(range(rG)[2]*100))/100),
-               N = (((range(rN)[1]*100):(range(rN)[2]*100))/100),
-               NB = range(rNB)[1]:range(rNB)[2]
-);
-densitys <- list(G = dgamma(x = ranges$G,
-                            shape = 10, rate = 5.3),
-                 N = dnorm(x = ranges$N, 
-                           mean = 2.3, sd = 0.3),
-                 NB = dnbinom(x = ranges$NB, 
-                              size = 32,prob = 1/5))
-```
 
 <p color="green" align="right">**Реальное** распределение - **ЗЕЛЕНЫМ**</p>
 <p color="red" align="right">**Выборочное** распределение - **КРАСНЫМ**</p>
 
 <h2 align="center">Гистограммы</h2>
 
-```{r }
-  #   построение c&d Зеленый - ген.совок. Красный - выборка
-hist3 <- function(){
-  {
-    hist(rG, 
-         breaks = 20,
-         freq = F, 
-         col = "lightblue",
-         xlab = "Диаметр юбки",
-         ylab = "Плотность вероятности",
-         main = "rG Гистограмма, с кривой плотности"
-    );
-    lines(density(rG), col = "red", lwd = 2);
-    lines(x = ranges$G, y = densitys$G, col = "green", lwd = 2);
-  }
-  {
-    hist(rN, 
-         breaks = 20, 
-         freq = F, 
-         col = "lightblue",
-         xlab = "Диаметр юбки",
-         ylab = "Плотность вероятности",
-         main = "rN Гистограмма, с кривой плотности"
-    );
-    lines(density(rN), col = "red", lwd = 2);
-    lines(x = ranges$N, y = densitys$N, col = "green", lwd = 2);
-  }
-  {
-    hist(rNB, 
-         breaks = 20, 
-         freq = F, 
-         col = "lightblue",
-         xlab = "Диаметр юбки",
-         ylab = "Плотность вероятности",
-         main = "NB Гистограмма, с кривой плотности"
-    );
-    lines(density(rNB), col = "red", lwd = 2);
-    lines(x = ranges$NB, y = densitys$NB, col = "green", lwd = 2);
-  }
-}
-hist3();
-```
+![](README_figs/README-unnamed-chunk-4-1.png)<!-- -->![](README_figs/README-unnamed-chunk-4-2.png)<!-- -->![](README_figs/README-unnamed-chunk-4-3.png)<!-- -->
 
 
 <p align="right"><b>Выводы:</b></p>
@@ -199,71 +102,61 @@ hist3();
 
 Таблица выборочных значений:
 
-```{r }
-distributionsProp = t(sapply(distributions,allProp))
-distributionsProp
+
+```
+##     mean var    asm   exc    
+## rG  1.89 0.367  0.761 1.29   
+## rN  2.3  0.0926 0.164 0.242  
+## rNB 128  626    0.342 -0.0371
 ```
 
 **f.	сравнить результаты пункта e  с реальными характеристиками распределения** 
 
 Таблица ожидаемых значений:
 
-```{r }
-expectedProp = rbind(rG =  c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
-                  rN =  c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
-                  rNB =  c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
-expectedProp
+
+```
+##       mean     var   asm    exc
+## rG    1.89   0.356 0.533 0.3823
+## rN    2.30   0.090 0.050 0.0191
+## rNB 128.42 574.836 0.242 0.3282
 ```
 
 Таблица смежности:
 
-```{r }
-deltaProp = rbind(rG = allProp(rG)  - c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
-                  rN = allProp(rN) - c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
-                  rNB = allProp(rNB)  - c(mean = 128.424362, var= 624.8357284,asm = 0.242437444,exc = 0.3282478634))
-deltaProp
 
+```
+##          mean     var    asm    exc
+## rG   0.006543 0.01056 0.2276  0.907
+## rN  -0.000415 0.00264 0.1144  0.223
+## rNB -0.886362 0.94661 0.0991 -0.365
 ```
 <p align="right"><b>Выводы:</b></p>
 <p align="right"><i>Значения выборки совпали с значегиями для ГС, предположительно различия не значимы</i></p></p>
 ----
 ###Распределение из файла:
 
-```{r }
-# читаем темпиратуры
-AnnualDiameter<<-as.data.frame(read.csv("annual-diameter-of-skirt-at-hem-.csv",col.names = c("AnnualDiameter")));
-```
+
 
 **Повторяем пункты a-d**
 
 <h2 align="center">Эмпирическое распределение</h2>
-```{r }
-plot.ecdf(AnnualDiameter$AnnualDiameter,col.01line = "red",col="green",main = "Empirical Plot AnnualDiameter");
-```
+![](README_figs/README-unnamed-chunk-9-1.png)<!-- -->
 
 <h2 align="center">Гистограмма</h2>
 
-```{r }
-hist(AnnualDiameter$AnnualDiameter, 
-     breaks = 20,
-     freq = F, 
-     col = "lightblue",
-     xlab = "Темпиратура",
-     ylab = "Плотность вероятности",
-     main = "Гистограмма, с кривой плотности Темпиратуры"
-);
-```
+![](README_figs/README-unnamed-chunk-10-1.png)<!-- -->
 
 Таблица значений параметров:
 
-```{r }
-AnnualDiameterProp <- allProp(AnnualDiameter$AnnualDiameter)
-AnnualDiameterProp
+
+```
+##   mean   var    asm   exc
+## 1  731 51786 -0.735 0.773
 ```
 
 <p align="right"><b>Выводы:</b></p>
-<p align="right"><i>Данных(`r length(AnnualDiameter$AnnualDiameter)` наблюдений) недостаточно, чтобы делать выводы о распределении темпиратур, имеются выбросы, возможно это ошибочные данные и есть смысл исключить их или заменить на среднее по выборке. Эмпирическая функция похожа на распределение Вейбулла</i></p>
-
+<p align="right"><i>Данных(46 наблюдений) недостаточно, чтобы делать выводы о распределении темпиратур, имеются выбросы</i></p>
 ----
 ```R
 
