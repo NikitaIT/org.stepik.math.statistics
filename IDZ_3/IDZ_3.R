@@ -82,3 +82,27 @@ ggplot(data.frame(a=a,i = dataset$intervalRightA),aes(x = i,y = a,colour = 1), s
        title = "Птички на ветке.")
 dataset$a=NULL
 
+
+#Неизвестное распределение
+type<<-as.data.frame(read.csv("type1_1.csv"));
+
+#построим асимптотический доверительный интервал для a на базе ОМП.
+library(fitdistrplus);
+#Коши или нормальное, т.к. тяжелые хвосты
+typeVcauchy = mledist(data=type$x, distr="cauchy", optim.method="default",
+                      lower=-Inf, upper=Inf,start = formals(type$x))
+
+var_typeVcauchy_OMP = (mean(typeVcauchy$hessian))^(-1)
+sd_typeVcauchy_OMP = sqrt(var_typeVcauchy_OMP)
+
+typeVnorm = mledist(data=type$x, distr="norm", optim.method="default",
+                    lower=-Inf, upper=Inf,start = formals(type$x))
+
+var_typeVnorm_OMP = (mean(typeVnorm$hessian))^(-1)
+sd_typeVnorm_OMP = sqrt(var_typeVnorm_OMP)
+
+all_p_Viuw = data.frame(var_typeVnorm_OMP=var_typeVnorm_OMP,sd_typeVnorm_OMP=sd_typeVnorm_OMP,var_typeVcauchy_OMP=var_typeVcauchy_OMP,sd_typeVcauchy_OMP=sd_typeVcauchy_OMP)
+all_p_Viuw
+min_sd_OMP = min(all_p_Viuw$sd_typeVcauchy_OMP,all_p_Viuw$sd_typeVnorm_OMP)
+
+sapply(a,qnorm)*min_sd_OMP

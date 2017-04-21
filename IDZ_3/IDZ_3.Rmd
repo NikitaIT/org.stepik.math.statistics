@@ -239,4 +239,63 @@ dataset$a=NULL
 
 На основании оценок, полученных в предыдущем ДЗ (задания 2 и 3), постройте асимптотические доверительные интервалы уровней значимости(`r paste0("a = ", paste0(a, sep = "", collapse = ", a = "))`).
 
-Я еще не доделал то идз, чтобы сделать эту часть))
+Не имея особого желания набирать формулы, напишу сразу интервал:
+
+$$[\theta− z_{cr}*se(\theta), \theta + z_{cr}*se(\theta)]$$
+где $se = \sqrt {E(H)^{-1}}$  для произвального случая, разумеется только если найдены минимумы и гессиан существует.
+
+```{r}
+#Неизвестное распределение
+type<<-as.data.frame(read.csv("type1_1.csv"));
+
+#построим асимптотический доверительный интервал для a на базе ОМП.
+library(fitdistrplus);
+#Коши или нормальное, т.к. тяжелые хвосты
+typeVcauchy = mledist(data=type$x, distr="cauchy", optim.method="default",
+                      lower=-Inf, upper=Inf,start = formals(type$x))
+
+var_typeVcauchy_OMP = (mean(typeVcauchy$hessian))^(-1)
+sd_typeVcauchy_OMP = sqrt(var_typeVcauchy_OMP)
+
+typeVnorm = mledist(data=type$x, distr="norm", optim.method="default",
+                    lower=-Inf, upper=Inf,start = formals(type$x))
+
+var_typeVnorm_OMP = (mean(typeVnorm$hessian))^(-1)
+sd_typeVnorm_OMP = sqrt(var_typeVnorm_OMP)
+
+all_p_Viuw = data.frame(var_typeVnorm_OMP=var_typeVnorm_OMP,sd_typeVnorm_OMP=sd_typeVnorm_OMP,var_typeVcauchy_OMP=var_typeVcauchy_OMP,sd_typeVcauchy_OMP=sd_typeVcauchy_OMP)
+all_p_Viuw
+min_sd_OMP = min(all_p_Viuw$sd_typeVcauchy_OMP,all_p_Viuw$sd_typeVnorm_OMP)
+```
+
+Выбираем наименьший sd = `r min_sd_OMP`.
+
+```{r}
+typeVcauchy$estimate
+```
+
+Сроим интервал для первого параметра:
+
+```{r}
+cbind(a,left = typeVcauchy$estimate[1]+sapply(a,qnorm)*min_sd_OMP,right = typeVcauchy$estimate[1]-sapply(a,qnorm)*min_sd_OMP)
+```
+
+Сроим интервал для второго параметра:
+```{r}
+cbind(a,left = typeVcauchy$estimate[2]+sapply(a,qnorm)*min_sd_OMP,right = typeVcauchy$estimate[2]-sapply(a,qnorm)*min_sd_OMP)
+```
+
+Радуемся! 
+
+Мы получили максимальную похожесть выборки из неизвестного распределения, на распределение Коши и построили ДИ для ОМП.
+
+Посчитанный ДИ еще раз подтверждает нашу догадку о похожести на Коши.
+
+```{r}
+checkHistSample = function(x,FUN,params,name){
+hist(x,breaks=30,col="blue",freq=FALSE,main = name)
+expected_sample = do.call(FUN, c(list(x =sort(x)),params))
+lines(sort(x),expected_sample,col="red",lwd=2)
+}
+checkHistSample(type$x,dcauchy,as.list(typeVcauchy$estimate),"typeVcauchy")
+```

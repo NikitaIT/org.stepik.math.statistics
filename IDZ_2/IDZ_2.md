@@ -1,32 +1,8 @@
----
-title: "IDZ 2"
-author: "Nikita Fiodorov"
-date: "21.04.17"
-output:
-  html_document:
-    keep_md: yes
-    output: null
-    toc_float: yes0
-  pdf_document:
-    keep_tex: yes
-    toc: yes
-  word_document: default
-  github_document: rmarkdown::github_document
-params:
-  bibliography: bibl.bib
-  urlcolor: blue
----
+# IDZ 2
+Nikita Fiodorov  
+21.04.17  
 
-```{r setup, include=FALSE}
-library(dplyr)
-library(tidyr)
-library(xtable)
-library(ggvis)
-library(ggplot2)
 
-options(scipen = 0, digits = 3)
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
-```
 
 <a name="Idz_2"></a>
 
@@ -50,18 +26,15 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = 
 Равномерное				        	| a ≤ b
 Искомое					 	          | ??
 
-```{r}
-#выборка данных
-#dir()
-#setwd("")
-#равномерное распределение
-unif = as.data.frame(read.csv("unif_2.csv"));
-#Коши распределение
-cauchy = as.data.frame(read.csv("cauchy_1.csv"));
-#Неизвестное распределение
-type = as.data.frame(read.csv("type1_1.csv"));
-d_View = data.frame(unif=summary(unif)[1:6, 1],cauchy=summary(cauchy)[1:6, 1],type=summary(type)[1:6, 1])
-d_View
+
+```
+##              unif            cauchy            type
+## 1 Min.   :-3.55   Min.   :-508660   Min.   :-5.17  
+## 2 1st Qu.:-1.70   1st Qu.:     -1   1st Qu.:-0.65  
+## 3 Median : 0.24   Median :      1   Median :-0.01  
+## 4 Mean   : 0.24   Mean   :   -101   Mean   :-0.05  
+## 5 3rd Qu.: 2.14   3rd Qu.:      3   3rd Qu.: 0.60  
+## 6 Max.   : 4.10   Max.   :   1838   Max.   : 4.58
 ```
 
 ### Выполнение работы
@@ -78,49 +51,36 @@ d_View
 Все три выборочные дисперсии являются состоятельными оценками теоретической дисперсии. Если ${\mathrm  {D}}[X_{i}]=\sigma ^{2}<\infty$ , то $S_{n}^{2}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$
 , $S^{2}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$ и $S^{x^{2}}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$.
 
-```{r init, cache=TRUE}
-set.seed(123)
-
-#параметры
-paramN = list(mean = 0, sd = 1)
-sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
-
-#вычислить  следующие оценки дисперсии:  выборочную дисперсию, 
-#несмещенную выборочную дисперсию,  эффективную выборочную дисперсию. 
-vars<- function(x){sum((x-mean(x))^2)/(length(x))}
-varef<-function(x){(length(x)+1)*var(x)/(length(x)) }
-allProp <- function(x){ c(vars = vars(x),var = var(x),varef=varef(x))}
 
 
-```
-
-####	Для выборок объема `r sizeN` из стандартного нормального закона(`r paramN`)
+####	Для выборок объема 10, 100, 1000, 10^{4} из стандартного нормального закона(0, 1)
 
 $$f(x,\mu,\sigma)={\tfrac {1}{\sigma {\sqrt {2\pi }}}}\;e^{-{\frac {(x-\mu )^{2}}{2\sigma ^{2}}}},$$
 $$F(x,0,1) = \frac 1 {\sqrt {2 \pi}} \int _{-\infty} ^x e^{ -\frac {t^2}{2}} dt.$$
 Статистики случайной выборки выборок:
 
-```{r}
-allbind <- function(size,params,FUN=rnorm){
-r = sapply(size,function(x){do.call(rnorm, c(params,x))});
-return(t(as.matrix(sapply(r,allProp))))
-}
-allbind(sizeN,paramN)
+
+```
+##         vars   var varef
+## x10    0.819 0.910 1.001
+## x100   0.809 0.817 0.826
+## x1000  1.009 1.010 1.011
+## x10000 0.997 0.998 0.998
 ```
 
 #### Абсолютное значение отклонения(=1)
 
-```{r}
-all <- abs(allbind(sizeN,paramN)-1)
-```
+
 
 В среднем для 10 средних по выборке:
 
-```{r}
-varabs<- function(...){abs(allbind(sizeN,paramN)-1)}
-all<- function(){(varabs()+varabs()+varabs()+varabs()+varabs()+
-                    varabs()+varabs()+varabs()+varabs()+varabs())/10}
-all()
+
+```
+##           vars     var   varef
+## x10    0.42094 0.37661 0.34830
+## x100   0.07320 0.07596 0.07872
+## x1000  0.02870 0.02893 0.02927
+## x10000 0.00743 0.00745 0.00747
 ```
 
 <p align="right"><b>Выводы:</b></p>
@@ -133,9 +93,7 @@ all()
 
 #### Оценка параметров, использую метод максимального правдоподобия.
 
-```{r}
-library(fitdistrplus);
-```
+
 
 #### Построение оценки для Коши
 
@@ -160,83 +118,132 @@ $$\frac{\partial}{\partial z} f{\left (x,y,z \right )} = \frac{2 x - 2 z}{y^{2} 
 
 #### Сравнение с Коши
 
-```{r}
-cauchyVcauchy =mledist(data=cauchy$x, distr="cauchy", optim.method="default",
-        lower=-Inf, upper=Inf,start = formals(cauchy$x))
-cauchyVcauchy$estimate
 
+```
+## location    scale 
+##    0.862    1.713
 ```
 
 Для оценка дисперсии по матрице Гессе:
 
-```{r}
-var_OMP = (-mean(cauchyVcauchy$hessian))^(-1)
-var_OMP
 
+```
+## [1] -0.00233
 ```
 
 <p align="right"><i>Гессиан положительно определён => найдена точка локального минимума функции.</i></p></p>
 
 #### Сравнение с Равномерным
 
-```{r}
-unifVunif = mledist(data=unif$x, distr="unif", optim.method="default",lower=-Inf, upper=Inf,start = formals(unif$x))
-unifVunif$estimate
+
+```
+##   min   max 
+## -3.55  4.10
 ```
 
 Для оценка дисперсии по матрице Гессе:
 
-```{r}
-var_OMP = (-mean(unifVunif$hessian))^(-1)
-var_OMP
 
+```
+## [1] NA
 ```
 
 #### Предположение о неизвестном распределении.
 
-```{r}
-checkHistSample = function(x,FUN,params,name){
-hist(x,breaks=25,col="blue",freq=FALSE,main = name)
-expected_sample = do.call(FUN, c(list(x =sort(x)),params))
-lines(sort(x),expected_sample,col="red",lwd=2)
-}
-
-par(mfrow=c(2,2))
-hist(type$x,breaks = 2*length(type$x)^(1/3), freq = F, col = "lightblue");
-hist(rnorm(n = 10^6, mean = 0, sd = 1),freq = F, col = "lightblue");
-hist(rcauchy(n = 10^2,0,0.1),breaks = 50,freq = F, col = "lightblue");
-hist(rt(n = 10^2,df=1),breaks = 50,freq = F, col = "lightblue");
-```
+![](README_figs/README-unnamed-chunk-10-1.png)<!-- -->
 
 <p align="right"><b>Предположение:</b></p>
 <p align="right"><i>Коши или нормальное, т.к. тяжелые хвосты и холм</i></p></p>
 
 #### Сравнение с Коши
 
-```{r}
-typeVcauchy = mledist(data=type$x, distr="cauchy", optim.method="default",
-        lower=-Inf, upper=Inf,start = formals(type$x))
-typeVcauchy
+
+```
+## $estimate
+## location    scale 
+##  0.00531  0.55711 
+## 
+## $convergence
+## [1] 0
+## 
+## $loglik
+## [1] -10602
+## 
+## $hessian
+##          location scale
+## location     7873   271
+## scale         271 14681
+## 
+## $optim.function
+## [1] "optim"
+## 
+## $fix.arg
+## NULL
+## 
+## $optim.method
+## [1] "Nelder-Mead"
+## 
+## $fix.arg.fun
+## NULL
+## 
+## $weights
+## NULL
+## 
+## $counts
+## function gradient 
+##       39       NA 
+## 
+## $optim.message
+## NULL
 ```
 Посмотрим гистограмы:
-```{r}
-checkHistSample(type$x,dcauchy,as.list(typeVcauchy$estimate),"typeVcauchy")
-```
+![](README_figs/README-unnamed-chunk-12-1.png)<!-- -->
 <p align="right"><i>Близко</i></p></p>
 
 
 #### Сравнение с нормальным
 
-```{r}
-typeVnorm = mledist(data=type$x, distr="norm", optim.method="default",
-        lower=-Inf, upper=Inf,start = formals(type$x))
-typeVnorm
 
+```
+## $estimate
+##    mean      sd 
+## -0.0546  0.9930 
+## 
+## $convergence
+## [1] 0
+## 
+## $loglik
+## [1] -9883
+## 
+## $hessian
+##      mean    sd
+## mean 7099     0
+## sd      0 14198
+## 
+## $optim.function
+## [1] "optim"
+## 
+## $fix.arg
+## NULL
+## 
+## $optim.method
+## [1] "Nelder-Mead"
+## 
+## $fix.arg.fun
+## NULL
+## 
+## $weights
+## NULL
+## 
+## $counts
+## function gradient 
+##       43       NA 
+## 
+## $optim.message
+## NULL
 ```
 
 Посмотрим гистограмы:
-```{r}
-checkHistSample(type$x,dnorm,as.list(typeVnorm$estimate),"typeVnorm")
-```
+![](README_figs/README-unnamed-chunk-14-1.png)<!-- -->
 
 <p align="right"><i>Не так близко, как Коши</i></p></p>

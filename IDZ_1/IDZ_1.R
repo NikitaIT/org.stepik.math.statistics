@@ -110,15 +110,15 @@ hist3();
 distributionsProp = t(sapply(distributions,allProp))
 
 
-expectedProp = rbind(rG =  c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
-                  rN =  c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
-                  rNB =  c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
-
+expectedProp = rbind(rG =  c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 2/sqrt(propG$shape),exc = 6/propG$shape),
+                     rN =  c(mean = propN$mean, var= propN$sd^2,asm = 0,exc = 0),
+                     rNB =  c(mean = propNB$size*(1-propNB$prob)/propNB$prob, var= propNB$size*(1-propNB$prob)/propNB$prob^2,asm = (2-propNB$prob)/sqrt(propNB$size*(1-propNB$prob)),exc = 6/propNB$size - (propNB$prob)/(propNB$size*(1-propNB$prob))))
+expectedProp
 #f.	сравнить результаты пункта 'e' с реальными характеристиками распределения 
 
-deltaProp = rbind(rG = allProp(rG)  - c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
-                  rN = allProp(rN) - c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
-                  rNB = allProp(rNB)  - c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
-
+deltaProp = rbind(rG = allProp(rG)  - c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 2/sqrt(propG$shape),exc = 6/propG$shape),
+                  rN = allProp(rN) - c(mean = propN$mean, var= propN$sd^2,asm = 0,exc = 0),
+                  rNB = allProp(rNB)  - c(mean = propNB$size*(1-propNB$prob)/propNB$prob, var= propNB$size*(1-propNB$prob)/propNB$prob^2,asm = (2-propNB$prob)/sqrt(propNB$size*(1-propNB$prob)),exc = 6/propNB$size - (propNB$prob)/(propNB$size*(1-propNB$prob))))
+deltaProp
 write.csv(distributionsProp,file = "tProp.csv")
 

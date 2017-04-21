@@ -206,21 +206,68 @@ distributionsProp
 
 **f.	сравнить результаты пункта e  с реальными характеристиками распределения** 
 
+$$\Gamma (k,\theta ), {\displaystyle \mathrm {Gamma} (k,\theta )}$$
+Плотность вероятности	$\displaystyle x^{{k-1}}{\frac  {e^{{-{\frac  {x}{\theta }}}}}{\Gamma (k)\theta ^{k}}}$
+
+Функция распределения	 ${\displaystyle {\frac {\gamma (x/\theta ,k)}{\Gamma (k)}}}$
+
+Математическое ожидание	${\displaystyle k\theta }$
+
+Дисперсия	${\displaystyle k\theta ^{2}}$
+
+Коэффициент асимметрии	${\displaystyle \frac  {2}{{\sqrt  {k}}}}$
+
+Коэффициент эксцесса	${\displaystyle \frac  {6}{k}}$
+
+$${\displaystyle \mathrm {NB} (r,p)}$$
+Параметры	$r>0$ , ${\displaystyle p\in (0;1)}$ , $q\equiv 1-p$
+
+Носитель	$k\in \{0,1,2,\ldots \}$
+
+Функция вероятности	${\displaystyle {\frac {\Gamma (r+k)}{k!\,\Gamma (r)}}\,p^{r}\,q^{k}}$
+
+Функция распределения	${\displaystyle I_{p}(r,k+1)}$
+
+Математическое ожидание	${\displaystyle {\frac {rq}{p}}}$
+
+Дисперсия	${\displaystyle {\frac {rq}{p^{2}}}}$
+
+Коэффициент асимметрии	${\displaystyle {\frac {2-p}{\sqrt {r\,q}}}}$
+
+Коэффициент эксцесса	${\displaystyle {\frac {6}{r}}+{\frac {p^{2}}{r\,q}}}$
+
+$${\displaystyle N\left(\mu ,\sigma ^{2}\right)}$$
+Параметры	$\mu$ — коэффициент сдвига (вещественное число), $\sigma > 0$ — коэффициент масштаба (вещественный, строго положительный)
+
+Носитель	${\displaystyle x\in \left(-\infty ;+\infty \right)}$
+
+Плотность вероятности	${\displaystyle {\frac {1}{\sigma {\sqrt {2\pi }}}}\;\exp \left(-{\frac {\left(x-\mu \right)^{2}}{2\sigma ^{2}}}\right)}$
+
+Функция распределения	${\frac {1}{2}}\left[1+\operatorname {erf} \left({\frac {x-\mu }{\sqrt {2\sigma ^{2}}}}\right)\right]$
+
+Математическое ожидание	$\mu$
+
+Дисперсия	$\sigma ^{2}$
+
+Коэффициент асимметрии	$0$
+
+Коэффициент эксцесса	$0$
+
 Таблица ожидаемых значений:
 
 ```{r }
-expectedProp = rbind(rG =  c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
-                  rN =  c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
-                  rNB =  c(mean = 128.424362, var= 574.8357284,asm = 0.242437444,exc = 0.3282478634))
+expectedProp = rbind(rG =  c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 2/sqrt(propG$shape),exc = 6/propG$shape),
+                  rN =  c(mean = propN$mean, var= propN$sd^2,asm = 0,exc = 0),
+                  rNB =  c(mean = propNB$size*(1-propNB$prob)/propNB$prob, var= propNB$size*(1-propNB$prob)/propNB$prob^2,asm = (2-propNB$prob)/sqrt(propNB$size*(1-propNB$prob)),exc = 6/propNB$size - (propNB$prob)/(propNB$size*(1-propNB$prob))))
 expectedProp
 ```
 
 Таблица смежности:
 
 ```{r }
-deltaProp = rbind(rG = allProp(rG)  - c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 0.5332323,exc = 0.38232323),
-                  rN = allProp(rN) - c(mean = propN$mean, var= propN$sd^2,asm = 0.05003010,exc = 0.019126277),
-                  rNB = allProp(rNB)  - c(mean = 128.424362, var= 624.8357284,asm = 0.242437444,exc = 0.3282478634))
+deltaProp = rbind(rG = allProp(rG)  - c(mean = propG$shape/propG$rate, var= propG$shape/propG$rate^2,asm = 2/sqrt(propG$shape),exc = 6/propG$shape),
+                  rN = allProp(rN) - c(mean = propN$mean, var= propN$sd^2,asm = 0,exc = 0),
+                  rNB = allProp(rNB)  - c(mean = propNB$size*(1-propNB$prob)/propNB$prob, var= propNB$size*(1-propNB$prob)/propNB$prob^2,asm = (2-propNB$prob)/sqrt(propNB$size*(1-propNB$prob)),exc = 6/propNB$size - (propNB$prob)/(propNB$size*(1-propNB$prob))))
 deltaProp
 
 ```
