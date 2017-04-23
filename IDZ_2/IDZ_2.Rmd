@@ -51,6 +51,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = 
 Искомое					 	          | ??
 
 ```{r}
+set.seed(123)
 #выборка данных
 #dir()
 #setwd("")
@@ -79,7 +80,7 @@ d_View
 , $S^{2}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$ и $S^{x^{2}}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$.
 
 ```{r init, cache=TRUE}
-set.seed(123)
+
 
 #параметры
 paramN = list(mean = 0, sd = 1)

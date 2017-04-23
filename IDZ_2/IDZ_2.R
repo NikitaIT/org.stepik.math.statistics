@@ -18,7 +18,7 @@ paramN = list(mean = 0, sd = 1)
 sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
 
 allbind <- function(size,params,FUN=rnorm){
-r = sapply(size,function(x){do.call(rnorm, c(params,x))});
+r = sapply(size,function(x){do.call(FUN, c(params,x))});
 return(t(as.matrix(sapply(r,allProp))))
 }
 varabs<- function(...){abs(allbind(sizeN,paramN)-1)}
