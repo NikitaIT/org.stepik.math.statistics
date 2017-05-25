@@ -44,4 +44,134 @@ sapply(norm_data,allProp)
 
 #обработка данных
 
+pirCount = function(n, k) {
+(k+1)*(n-k+1)
+}
 
+pir(4,0)
+gg = c()
+for(i in 0:100){
+  for(j in 0:i){
+    gg = c(gg,as.character(pirCount(i,j)))
+  }
+}
+head(gg)
+dir()
+writeLines(gg,"res.txt",sep = ",")
+pirCount(2,1)
+pirCount(11,1)
+pirCount(2,0)
+pirCount(3,1)
+pirCount(3,0)
+pirCount(3,2)
+pirCount(4,2)
+f = function(n, k) {
+  if(k<0||k>n) {0
+    } else if(n==0) { 
+    1
+  }else {
+    1+(f(n-1,k-1)+f(n-1,k))/2;
+    }
+}
+f = function(n, k) {
+  row = c(0);
+  if(n<1){
+    return(0)
+  }
+  row[2]=row[1]=2-1/(2^(2-1));
+  if(n==1){
+    return(row)
+  }
+  for(i in 3:(n+1)){
+    temp = row;
+    row[i]=row[1]=2-1/(2^(i-1));
+    for(j in 2:(i-1)){
+      row[j]=(temp[j-1]+temp[j])/2 +1
+    }
+  }
+  row
+}
+f = function(n, k) {
+  row = c(0);
+  for(i in 1:(n+1)){
+    temp = row;
+    row[i]=row[1]=2-1/(2^(i-1));
+    if(i>2){
+      for(j in 2:(i-1)){
+        row[j]=(temp[j-1]+temp[j])/2 +1
+      }
+    }
+  }
+  row
+}
+system.time(a <- f(322,156))
+system.time(a <- f1(322,156))
+
+Rprof(tmp <- tempfile())
+f(322,156)[157]
+example(f)
+Rprof()
+summaryRprof(tmp)
+
+print("-");
+print(l);print(r);
+print("-");
+
+f(0,0)
+f(1,0)
+f(2,0)
+f(2,1)
+f(3,2)
+f(4,2)
+f(5,2)
+f(322,156)[157]
+plot(f(322,156))
+table(f(40,156))
+
+
+5%%2 == 0
+
+f = function(n, k) {
+  row = c(0);
+  if(n<1){
+    return(0)
+  }
+  row[2]=row[1]=2-1/(2^(2-1));
+  if(n==1){
+    return(row[1])
+  }
+  for(i in 3:(n+1)){
+    temp = row;
+    row[1]=2-1/(2^(i-1));
+    #генерация поколения
+    for(j in 2:(ceiling(i/2))){
+      row[j]=1+(temp[j-1]+temp[j])/2;
+    }
+    #четная строка длиннее
+    if(i%%2 == 0){
+      row[i/2+1]=row[i/2];
+    }
+  }
+  #вывод
+  if(k+1 > n/2){
+    row[n - k+1]
+  }else{
+    row[k+1]
+  }
+}
+322/2
+f(322,156)
+322/2
+f(5422,161)[162]
+f(0,0)
+f1
+f2
+f2 = list(
+  f(0,0),
+  f(1,0),
+  f(2,1),
+  f(3,2),
+  f(4,2),
+  f(5,2),
+  f(6,2))
+f(3,2)

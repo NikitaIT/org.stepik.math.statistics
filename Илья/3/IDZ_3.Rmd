@@ -1,0 +1,307 @@
+---
+title: "IDZ_3"
+author: "Nikita"
+date: "23.03.17"
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
+```
+
+# Построение доверительных интервалов.
+
+```{r init, cache=TRUE}
+set.seed(123)
+n = 1000
+normal_mean = -2
+normal_sd = 0.25
+a = c(0.25, 0.1, 0.05, 0.01)
+p_values = 1 - a
+dataset = data.frame(row.names = a)
+normal<-rnorm(n,normal_mean,sqrt(normal_sd))
+M = mean(normal)
+```
+
+##Доверительные интервалы для параметров нормального распределения. 
+
+Постройте выборку длины $`r n`$ из нормального распределения $N (\mu = `r normal_mean`,\sigma = `r normal_sd`)$ (параметры выбираете самостоятельно) Для различных уровней значимости $(`r paste0("a = ", paste0(a, sep = "", collapse = ", a = "))`)$
+
+
+$$f(x)={\tfrac {1}{\sigma {\sqrt {2\pi }}}}\;e^{-{\frac {(x-\mu )^{2}}{2\sigma ^{2}}}}$$
+```{r graph}
+summary(normal)
+
+ggplot(as.data.frame(list(no = normal)), aes(x = no,y = ..density..)) + 
+  labs(x = "Значения",
+       y = "Плотность",
+       title = "Выборочное распределение") +
+  geom_histogram(bins = 30,colour = "darkgreen", fill = "white") + 
+  geom_density(alpha = 0.2,fill = "lightgreen",colour = "darkgreen")+
+  # задаем отметки на оси x
+  scale_x_continuous(breaks = as.vector(summary(normal)), 
+                     labels = c(names(summary(normal))))+
+  # задаем вертикальные линии
+  geom_vline(xintercept = as.vector(summary(normal)), colour = "red")
+```
+
+####Определение
+
+Доверительный интервал($interval$) - Интервал, построенный с помощью случайной выборки из распределения с неизвестным параметром, такой, что он содержит данный параметр с заданной вероятностью.
+
+Если провести N симуляций, то, ожидается, что в $(1-a)*N$ случаях  истинное среднее будет находиться внутри доверительного интервала.
+
+т.е. для $a=0.01$ мы предполагаем,  что в 99 случаях из 100 выборка включает среднее ГС.
+
+
+Значения квантилей:
+```{r}
+# квантили для нормального и t-стьюдента
+dataset$qnorm = sapply(1-a/2,qnorm)
+dataset$qt = sapply(1-a/2,qt,n-1)# qt(p,df,...)
+select(dataset, qnorm, qt)
+```
+Чем меньше уровень значимости, тем шире интервал. 
+
+###a.	Считая  дисперсию известной,  постройте доверительный интервал для мат. ожидания.
+
+***Можно использовать нормальное распределение, если знать  значение дисперсии в популяции. Кроме того, когда объем выборки небольшой, выборочное среднее отвечает нормальному распределению, если данные, лежащие в основе популяции, распределены нормально. ***
+
+Пусть  $X_{1},\ldots ,X_{n}\sim \mathrm {N} (\mu ,\sigma ^{2})$  — независимая выборка из нормального распределения, где $\sigma ^{2}$ — известная дисперсия. Определим произвольное $\alpha \in [0,1]$ и построим доверительный интервал для неизвестного среднего $\mu$ .
+
+**Утверждение.** Случайная величина $Z={\frac {{\bar {X}}-\mu }{\sigma /{\sqrt {n}}}}$
+имеет стандартное нормальное распределение $N (0,1)$. Пусть $z_{\alpha }$ — $\alpha$ -квантиль стандартного нормального распределения. Тогда в силу симметрии последнего имеем:
+
+$$\mathbb {P} \left(-z_{1-{\frac {\alpha }{2}}}\leq Z\leq z_{1-{\frac {\alpha }{2}}}\right)=1-\alpha$$
+
+После подстановки выражения для $Z$ и несложных алгебраических преобразований получаем:
+
+
+$$ \mathbb {P} \left({\bar {X}}-z_{1-{\frac {\alpha }{2}}}{\frac {\sigma }{\sqrt {n}}}\leq \mu \leq {\bar {X}}+z_{1-{\frac {\alpha }{2}}}{\frac {\sigma }{\sqrt {n}}}\right)=1-\alpha$$
+Интервалы:
+
+```{r}
+# a.  Считая  дисперсию(s) известной,  постройте доверительный интервал для мат ож(a).
+dataset$intervalLeftA = M-dataset$qnorm*sqrt(normal_sd/n)
+dataset$intervalRightA = M+dataset$qnorm*sqrt(normal_sd/n)
+select(dataset, Left = intervalLeftA, Right=intervalRightA)
+```
+
+
+###b.	Считая  дисперсию неизвестной,  постройте доверительный интервал для мат. ожидания.
+
+Пусть $X_{1},\ldots ,X_{n}\sim \mathrm {N} (\mu ,\sigma ^{2})$ — независимая выборка из нормального распределения, где $\mu ,\sigma ^{2}$ — неизвестные константы. Построим доверительный интервал для неизвестного среднего $\mu$ .
+
+**Утверждение.** Случайная величина $T={\frac {{\bar {X}}-\mu }{S/{\sqrt {n}}}},$ где  $S$ — несмещённое выборочное стандартное отклонение, имеет распределение Стьюдента с $n-1$ степенями свободы $t(n-1)$. Пусть ${\displaystyle t_{\alpha ,n-1}}$ -  ${\displaystyle \alpha }$ квантили распределения Стьюдента. Тогда в силу симметрии последнего имеем:
+
+$$\mathbb {P} \left(-t_{1-{\frac {\alpha }{2}},n-1}\leq T\leq t_{1-{\frac {\alpha }{2}},n-1}\right)=1-\alpha $$
+После подстановки выражения для $T$ и несложных алгебраических преобразований получаем:
+
+$$\mathbb {P} \left({\bar {X}}-t_{1-{\frac {\alpha }{2}},n-1}{\frac {S}{\sqrt {n}}}\leq \mu \leq {\bar {X}}+t_{1-{\frac {\alpha }{2}},n-1}{\frac {S}{\sqrt {n}}}\right)=1-\alpha$$
+Интервалы:
+
+```{r}
+#b.	Считая  дисперсию(s) неизвестной,  постройте доверительный интервал для мат ож(a).
+dataset$intervalLeftB = M-dataset$qt*sqrt(var(normal)/n);
+dataset$intervalRightB = M+dataset$qt*sqrt(var(normal)/n);
+select(dataset, Left = intervalLeftB, Right=intervalRightB)
+```
+
+***Стьюдент обеспечивает более широкий интервал, чем при использовании нормального распределения, поскольку учитывает дополнительную неопределенность, которую вводят, оценивая стандартное отклонение популяции и/или из-за небольшого объёма выборки.***
+***Когда объём выборки большой (порядка 100 и более), разница между двумя распределениями (t-Стьюдента и нормальным) незначительна. Тем не менее стоит всегда использовать t-распределение при вычислении доверительных интервалов, даже если объем выборки большой.***
+
+###c.  Постройте доверительный интервал для дисперсии.
+
+Пусть $X_{1},\ldots ,X_{n}\sim {\mathcal {N}}(\mu ,\sigma ^{2})$ — независимая выборка из нормального распределения, где $\mu$ , $\sigma ^{2}$ — неизвестные константы. Построим доверительный интервал для неизвестной дисперсии $\sigma ^{2}$.
+
+Теорема Фишера для нормальных выборок. Случайная величина
+
+$$H={\frac {(n-1)S^{2}}{\sigma ^{2}}},$$
+где $S^{2}$ — несмещённая выборочная дисперсия, имеет распределение $\chi ^{2}(n-1)$. Тогда имеем:
+
+$$ \mathbb {P} \left(\chi _{{\frac {1-\alpha }{2}},n-1}^{2}\leqslant H\leqslant \chi _{{\frac {1+\alpha }{2}},n-1}^{2}\right)=\alpha$$
+
+После подстановки выражения для $H$ и несложных алгебраических преобразований получаем:
+
+$$ \mathbb {P} \left({\frac {(n-1)S^{2}}{\chi _{{\frac {1+\alpha }{2}},n-1}^{2}}}\leqslant \sigma ^{2}\leqslant {\frac {(n-1)S^{2}}{\chi _{{\frac {1-\alpha }{2}},n-1}^{2}}}\right)=\alpha$$
+
+
+```{r}
+# c.  Постройте доверительный интервал для дисперсии(s).
+dataset$intervalLeftC = (n*normal_sd)/qchisq(1-a/2,n-1)
+dataset$intervalRightC = (n*normal_sd)/qchisq(a/2,n-1)
+select(dataset, Left = intervalLeftC, Right=intervalRightC)
+```
+###d.	Считая  дисперсию s известной,  постройте асимптотический  доверительный интервал для a на базе ОМП. Сравните с результатом пункта a).
+Если эксперимент регулярный, то ОМП $\bar θ_n$ параметра $θ$ является
+
+асимптотически нормальной и состоятельной, то есть $\sqrt{I(θ)}(\bar θ_n − θ)⇒ N(0,1)$, где $I(θ)$ — информация Фишера для параметра $θ$ по наблюдениям $X$.
+
+Можно выбрать квантили $x_α$, решая уравнение $Ф(x_α) = 1- \frac {α}{2}$, где $Ф$ — функция распределения стандартного нормального закона.
+
+В этом случае, в общем виде для параметра $θ$ доверительный интервал уровня $1-α$ будет выглядеть так:
+
+$$[ θ_n − I( θ_n)^{−1 /2} x_{\alpha} , θ_n + I( θ_n)^{−1 /2} x_{\alpha}]$$
+Информация Фишера обладает свойством: если имеется выборка из $n$
+
+элементов, где $I_i(θ)$ — информация Фишера для одного $i$-го элемента выборки,
+
+то $I(θ)=nI_i(θ)$.$I(a) = σ^{−2}$ На основании этого свойства и вида доверительного интервала
+
+построим асимптотический доверительный интервал для среднего:
+$$[X−\frac {(sx_α)}{\sqrt n}, X+\frac {(sx_α)}{\sqrt n} ]$$
+
+```{r}
+#d.	Считая  дисперсию s известной,  постройте асимптотический 
+#доверительный интервал для a на базе ОМП. Сравните с результатом пункта a).
+dataset$intervalLeftD = M-sqrt(normal_sd/n)*dataset$qnorm;
+dataset$intervalRightD = M + sqrt(normal_sd/n)*dataset$qnorm;
+select(dataset, Left = intervalLeftD, Right=intervalRightD)
+```
+
+###e.	Считая  мат. ожид. а известным,  постройте асимптотический  доверительный интервал для s на базе ОМП. Сравните с результатом пункта c).
+
+Если эксперимент регулярный, то ОМП $\bar θ_n$ параметра $θ$ является
+
+асимптотически нормальной и состоятельной, то есть $\sqrt{I(θ)}(\bar θ_n − θ)⇒ N(0,1)$, где $I(θ)$ — информация Фишера для параметра $θ$ по наблюдениям $X$.
+
+Можно выбрать квантили $x_α$, решая уравнение $Ф(x_α) = 1- \frac {α}{2}$, где $Ф$ — функция распределения стандартного нормального закона.
+
+В этом случае, в общем виде для параметра $θ$ доверительный интервал уровня $1-α$ будет выглядеть так:
+
+$$[ θ_n − I( θ_n)^{−1 /2} x_{\alpha} , θ_n + I( θ_n)^{−1 /2} x_{\alpha}]$$
+Информация Фишера обладает свойством: если имеется выборка из $n$
+
+элементов, где $I_i(θ)$ — информация Фишера для одного $i$-го элемента выборки,
+
+то $I(θ)=nI_i(θ)$.$I(σ^2) = σ^{−4/2}$ На основании этого свойства и вида доверительного интервала
+
+построим асимптотический доверительный интервал для дисперсии:
+
+ $$[s^2−\sqrt \frac {2}{n} s^2 x_\alpha, s^2+\sqrt \frac {2}{n} s^2 x_\alpha]$$
+
+
+```{r}
+###e.	Считая  мат. ожид. а известным,  постройте асимптотический  доверительный интервал для s на базе ОМП. Сравните с результатом пункта c).
+dataset$intervalLeftE = var(normal)-sqrt(2/n)*dataset$qnorm*var(normal);
+dataset$intervalRightE = var(normal) + sqrt(2/n)*dataset$qnorm*var(normal);
+select(dataset, Left = intervalLeftE, Right=intervalRightE)
+```
+
+###  Сравнение E c C
+```{r}
+data.frame(row.names = a,"E minus C" = abs(dataset$intervalLeftE-dataset$intervalLeftC))
+```
+Как видим значимых отличий нет.
+
+###  Сравнение D c A
+```{r}
+data.frame(row.names = a,"D minus A" = abs(dataset$intervalLeftA-dataset$intervalLeftA))
+```
+Как видим значимых отличий нет.
+
+То же видим на графике
+```{r}
+ss=10
+dataset$a=as.factor(a)
+ggplot(data.frame(a=a,i = dataset$intervalRightA),aes(x = i,y = a,colour = 1), size = ss*1)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightB), colour = 2,size=ss*0.9)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightC), colour = 3,size=ss*0.8)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightD), colour = 4,size=ss*0.7)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalRightE), colour = 5,size=ss*0.6)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftA), colour = 6,size=ss*0.5)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftB), colour = 7,size=ss*0.4)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftC), colour = 8,size=ss*0.3)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftD), colour = 9,size=ss*0.2)+
+  geom_point(data = data.frame(a=a,i = dataset$intervalLeftE), colour = 10,size=ss*0.1)+
+  geom_vline(xintercept = as.vector(var(normal)), colour = "red")+
+  geom_vline(xintercept = as.vector(M), colour = "green")+
+  labs(x = "Уровень значимости. Зеленая линия - мат ож, Красная - дисперсия",
+       y = "Величина распределения ",
+       title = "Птички на ветке.")
+dataset$a=NULL
+```
+
+##  Асимптотические  доверительные интервалы на базе ОМП
+
+На основании оценок, полученных в предыдущем ДЗ (задания 2 и 3), постройте асимптотические доверительные интервалы уровней значимости(`r paste0("a = ", paste0(a, sep = "", collapse = ", a = "))`).
+
+Не имея особого желания набирать формулы, напишу сразу интервал:
+
+$$[\theta− z_{cr}*se(\theta), \theta + z_{cr}*se(\theta)]$$
+где $se = \sqrt {E(H)^{-1}}$  для произвального случая, разумеется только если найдены минимумы и гессиан существует.
+
+```{r}
+#Неизвестное распределение
+type<<-as.data.frame(read.csv("type1_1.csv"));
+
+#построим асимптотический доверительный интервал для a на базе ОМП.
+library(fitdistrplus);
+#Коши или нормальное, т.к. тяжелые хвосты
+typeVcauchy = mledist(data=type$x, distr="cauchy", optim.method="default",
+                      lower=-Inf, upper=Inf,start = formals(type$x))
+
+var_typeVcauchy_OMP = (mean(typeVcauchy$hessian))^(-1)
+sd_typeVcauchy_OMP = sqrt(var_typeVcauchy_OMP)
+
+typeVnorm = mledist(data=type$x, distr="norm", optim.method="default",
+                    lower=-Inf, upper=Inf,start = formals(type$x))
+
+var_typeVnorm_OMP = (mean(typeVnorm$hessian))^(-1)
+sd_typeVnorm_OMP = sqrt(var_typeVnorm_OMP)
+
+all_p_Viuw = data.frame(var_typeVnorm_OMP=var_typeVnorm_OMP,sd_typeVnorm_OMP=sd_typeVnorm_OMP,var_typeVcauchy_OMP=var_typeVcauchy_OMP,sd_typeVcauchy_OMP=sd_typeVcauchy_OMP)
+all_p_Viuw
+min_sd_OMP = min(all_p_Viuw$sd_typeVcauchy_OMP,all_p_Viuw$sd_typeVnorm_OMP)
+```
+
+Выбираем наименьший sd = `r min_sd_OMP`.
+
+```{r}
+typeVcauchy$estimate
+```
+
+Сроим интервал для первого параметра:
+
+```{r}
+cbind(a,left = typeVcauchy$estimate[1]+sapply(a,qnorm)*min_sd_OMP,right = typeVcauchy$estimate[1]-sapply(a,qnorm)*min_sd_OMP)
+```
+
+Сроим интервал для второго параметра:
+```{r}
+cbind(a,left = typeVcauchy$estimate[2]+sapply(a,qnorm)*min_sd_OMP,right = typeVcauchy$estimate[2]-sapply(a,qnorm)*min_sd_OMP)
+```
+
+Радуемся! 
+
+Мы получили максимальную похожесть выборки из неизвестного распределения, на распределение Коши и построили ДИ для ОМП.
+
+Посчитанный ДИ еще раз подтверждает нашу догадку о похожести на Коши.
+
+```{r}
+checkHistSample = function(x,FUN,params,name){
+hist(x,breaks=30,col="blue",freq=FALSE,main = name)
+expected_sample = do.call(FUN, c(list(x =sort(x)),params))
+lines(sort(x),expected_sample,col="red",lwd=2)
+}
+checkHistSample(type$x,dcauchy,as.list(typeVcauchy$estimate),"typeVcauchy")
+```

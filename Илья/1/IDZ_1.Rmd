@@ -1,0 +1,264 @@
+---
+title: "IDZ 1"
+author: ""
+date: ""
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+set.seed(100);
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warRing = FALSE)
+
+```
+
+---
+
+
+Даны следующие распределения и параметры:
+
+Тип Распределения			      | Параметры
+----------------------------|--------------
+Бета						            | p=1/2, b=5/3
+Равномерное					        | a=-1, b=2
+Биномиальное 	              | m=25, p=2/3
+
+
+### Выполнение работы
+
+```{r}
+  #   выборочный эксцесс
+  exc<<-function(x){
+    sum((x-mean(x))^4)/length(x)/var(x)^2-3;
+  }
+  #   выборочную асимметрию
+  asm <<- function(x){
+    sum((x-mean(x))^3)/length(x)/var(x)^(3/2)
+  }
+  #   все характеристики
+  allProp <<- function(x){ data.frame(mean = mean(x),var = var(x),asm = asm(x),exc = exc(x))}
+```
+
+
+Необходимо для каждого распределения:
+
+**a.	сгенерировать выборку длины 1000 из данного распределения (см. стр. 19 методички)**
+
+```{r }
+  #a.	сгенерировать выборку длины 1000 из данного распределения (стр. 19)
+  n = 1000;
+  propB = list(p = 1/2, b = 5/3);
+  proprR = list(a = -1, b = 2);
+  proprB = list(m = 25,p = 2/3);
+  rB = rbeta(n = n,  1/2,  5/3);
+  rR = runif(n = n,  -1,  2);
+  rBi = rbinom(n = n,  25, 2/3);
+  distributions = list(rB=rB,rR=rR,rBi=rBi);
+  sapply(distributions,summary)
+  
+```
+
+**b.	построить по данной выборке эмпирическую функцию распределения;**
+
+Эмпирическая функция распределения в каждой точке принимает значение отношения числа наблюдений меньше этой точки к общему числу наблюдений.
+$$\hat{F}_m(x)\;=\;\frac{1}{m}\sum_{i=1}^m I_{\left\{x_i\leq x\right\}}.$$
+
+<h2 align="center">Эмпирические</h2>
+
+```{r }
+  #b. построить по данной выборке эмпирическую функцию распределения; 
+  ww = lapply(distributions,FUN = plot.ecdf,col.01line = "red",col="green")
+```
+
+
+
+<p align="right"><b>Выводы:</b></p>
+<p align="right">Эмпирическую функцию можно рассматривать как состоятельную оценку теоретической функции распределения </p><p align="right">т.к. по усиленному закону больших чисел $\hat{F}_m(x)$ сходится почти наверное к теоретической функции распределения $F(x):\hat{F}_m(x)\to F(x)$ почти наверное при $m \rightarrow \infty$.</p>
+----
+
+**c.	построить гистограмму частот;**
+**d.	сравнить гистограмму частот и реальную плотность данного распределения (вычисление значения плотности в точке в пакете R описано на той же 19 стр.)**
+
+Пусть $X_{1},\ldots ,X_{n},\ldots$  — выборка из некоторого распределения. Определим разбиение числовой прямой ${\displaystyle -\infty <a_{0}<a_{1}<\cdots <a_{k-1}<a_{k}<\infty }$. Пусть ${\displaystyle n_{i}=\sum \limits _{j=1}^{n}\mathbf {1} _{\{X_{j}\in (a_{i-1},a_{i}]\}},\;\quad i=1,\ldots ,k}$
+— число элементов выборки, попавших в ${\displaystyle i}$-й интервал. Тогда кусочно-постоянная функция ${\displaystyle {\tilde {h}}:\mathbb {R} \to \mathbb {R} }$, имеющая вид:
+
+${\displaystyle {\tilde {h}}(x)={\frac {n_{i}}{n\Delta a_{i}}},\Delta a_{i}=a_{i}-a_{i-1},\;i=1,\ldots ,k\;}$, — называется нормализованной гистограммой.
+
+```{r }
+#d.	сравнить гистограмму частот и реальную плотность данного распределения 
+#  (вычисление значения плотности в точке 19 стр.)
+#
+
+ranges <- list(rB = (((range(rB)[1]*100):(range(rB)[2]*100))/100),
+               rR = (((range(rR)[1]*100):(range(rR)[2]*100))/100),
+               rBi = range(rB)[1]:range(rB)[2]
+);
+densitys <- list(rB = dbeta(x = ranges$rB,  1/2,  5/3),
+  rR = dunif(x = ranges$rR,  -1,  2),
+  rBi = dbinom(x = ranges$rBi,  25, 2/3))
+
+```
+
+<p color="green" align="right">**Реальное** распределение - **ЗЕЛЕНЫМ**</p>
+<p color="red" align="right">**Выборочное** распределение - **КРАСНЫМ**</p>
+
+<h2 align="center">Гистограммы</h2>
+
+```{r }
+  #   построение c&d Зеленый - ген.совок. Красный - выборка
+hist3 <- function(){
+  {
+    hist(rB, 
+         breaks = 20,
+         freq = F, 
+         col = "lightblue",
+         xlab = "Диаметр юбки",
+         ylab = "Плотность вероятности",
+         main = "rB Гистограмма, с кривой плотности"
+    );
+    lines(density(rB), col = "red", lwd = 2);
+    lines(x = ranges$rB, y = densitys$rB, col = "green", lwd = 2);
+  }
+  {
+    hist(rR, 
+         breaks = 20, 
+         freq = F, 
+         col = "lightblue",
+         xlab = "Диаметр юбки",
+         ylab = "Плотность вероятности",
+         main = "rR Гистограмма, с кривой плотности"
+    );
+    lines(density(rR), col = "red", lwd = 2);
+    lines(x = ranges$rR, y = densitys$rR, col = "green", lwd = 2);
+  }
+  {
+    hist(rBi, 
+         breaks = 20, 
+         freq = F, 
+         col = "lightblue",
+         xlab = "Диаметр юбки",
+         ylab = "Плотность вероятности",
+         main = "rBi Гистограмма, с кривой плотности"
+    );
+    lines(density(rBi), col = "red", lwd = 2);
+    lines(x = ranges$rBi, y = densitys$rBi, col = "green", lwd = 2);
+  }
+}
+hist3();
+```
+
+
+<p align="right"><b>Выводы:</b></p>
+<p align="right"><i>По гистограммам видно, что распр. выборки из 1000 наблюбений близко к ген.сов. и видно распределение плотности</i></p>
+----
+
+
+**e.	вычислить следующие выборочные характеристики:  выборочное среднее, выборочную дисперсию, выборочную асимметрию, выборочный эксцесс; (см. стр. 20-22 методички)**
+
+Таблица выборочных значений:
+
+```{r }
+distributionsProp = t(sapply(distributions,allProp))
+distributionsProp
+```
+
+**f.	сравнить результаты пункта e  с реальными характеристиками распределения** 
+
+Таблица ожидаемых значений:
+
+```{r }
+expectedProp = rbind(rB =  c(a = propB$p/propB$b, var= propB$p/propB$b^2,asm = 2/sqrt(propB$p),exc = 6/propB$p),
+                  rR =  c(a = proprR$a, var= proprR$b^2,asm = 0,exc = 0),
+                  rBi =  c(a = proprB$m*(1-proprB$p)/proprB$p, var= proprB$m*(1-proprB$p)/proprB$p^2,asm = (2-proprB$p)/sqrt(proprB$m*(1-proprB$p)),exc = 6/proprB$m - (proprB$p)/(proprB$m*(1-proprB$p))))
+expectedProp
+```
+
+Таблица смежности:
+
+```{r }
+deltaProp = rbind(rB = allProp(rB)  - c(a = propB$p/propB$b, var= propB$p/propB$b^2,asm = 2/sqrt(propB$p),exc = 6/propB$p),
+                  rR = allProp(rR) - c(a = proprR$a, var= proprR$b^2,asm = 0,exc = 0),
+                  rBi = allProp(rBi)  - c(a = proprB$m*(1-proprB$p)/proprB$p, var= proprB$m*(1-proprB$p)/proprB$p^2,asm = (2-proprB$p)/sqrt(proprB$m*(1-proprB$p)),exc = 6/proprB$m - (proprB$p)/(proprB$m*(1-proprB$p))))
+deltaProp
+
+```
+<p align="right"><b>Выводы:</b></p>
+<p align="right"><i>Значения выборки совпали с значегиями для ГС, предположительно различия не значимы</i></p></p>
+----
+###Распределение из файла:
+
+```{r }
+# читаем темпиратуры
+AnnualDiameter<<-as.data.frame(read.csv("annual-changes-in-the-earths-rot1.csv",col.names = c("AnnualDiameter")));
+```
+
+**Повторяем пункты a-d**
+
+<h2 align="center">Эмпирическое распределение</h2>
+```{r }
+plot.ecdf(AnnualDiameter$AnnualDiameter,col.01line = "red",col="green",main = "Empirical Plot AnnualDiameter");
+```
+
+<h2 align="center">Гистограмма</h2>
+
+```{r }
+hist(AnnualDiameter$AnnualDiameter, 
+     breaks = 20,
+     freq = F, 
+     col = "lightblue",
+     xlab = "Темпиратура",
+     ylab = "Плотность вероятности",
+     main = "Гистограмма, с кривой плотности Темпиратуры"
+);
+```
+
+Таблица значений параметров:
+
+```{r }
+AnnualDiameterProp <- allProp(AnnualDiameter$AnnualDiameter)
+AnnualDiameterProp
+
+
+```
+
+<p align="right"><b>Выводы:</b></p>
+<p align="right"><i>Данных(`r length(AnnualDiameter$AnnualDiameter)` наблюдений) достаточно, чтобы делать выводы о распределении темпиратур, оно похоже на бета и хи квадрат</i></p>
+
+----
+```R
+
+# сохраняем результаты
+
+write.csv(AnnualDiameterProp,file = "AnnualDiameterProp.csv")
+
+write.csv(distributionsProp,file = "tProp.csv")
+
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,100 @@
+##a
+x<-scan("input2.txt")
+print(x)
+sortVector<-sort(x)
+print(sortVector)
+f<-function(x,t){z<-x[x<t]; length(z)/length(x)}
+xu<-unique (sort(x))
+yu<-0; for(i in 1:length(xu)) yu[i]<-f(x,xu[i]); yu[length(xu)+1]<-1
+z<-stepfun(xu,yu)
+plot(z,verticals=FALSE)
+hist (x, right = TRUE, freq = TRUE, col = "grey")
+##############
+##b
+mean<-sum(x)/length(x)
+print(mean)
+disp<-sum(x^2)/length(x)-mean^2
+print(disp)
+med<-median(x)
+print(med)
+asym<-sum((x-mean)^3)/length(x)/(disp^(3/2))
+print(asym)
+exc<-(sum((x-mean)^4)/length(x)/(disp^2))-3
+print(exc)
+#mean - мат.ожидание
+#disp - дисперсия
+#med - медиана
+#asym - ассиметрия
+#exc - эксцесс
+a<-0
+b<-7.46
+p<-f(x,b)-f(x,a)
+print (p)
+##############
+##c
+##############
+##d
+al<-0.05
+n<-length(x)
+xal<-qnorm (1-al/2)
+T<-array(dim=2)
+T[1]<-1/mean-xal*(1/mean)/(sqrt(n))
+T[2]<-1/mean+xal*(1/mean)/(sqrt(n))
+T
+##############
+##e
+la0<- 0.14
+q2<-sort(x)
+q3<-c(0:(n-1))/n
+q4<-c(1:n)/n
+q5<-pexp(q2,la0)
+q6<-abs(q3-q5)
+q7<-abs(q4-q5)
+q8<-pmax(q6,q7)
+D<-max(q8)
+D
+KS<-sqrt(n)*D
+KS
+##############
+##f
+n<-length(x)
+la0<-0.14
+r<-5
+al2<-0.05
+border<-c(0.45,1.05,2.19,5.86)
+nu<-c(10,10,10,10,10)
+p<-array(dim=r)
+p[1]<-pexp(border[1],la0)
+p[r]<-1-pexp(border[r-1],la0)
+p[2:(r-1)]<-pexp(border[2:(r-1)],la0)-pexp(border[1:(r-2)],la0)
+q6<-array(dim=r)
+q6<-n*p
+q7<-(nu[1:r]-q6[1:r])/sqrt(q6[1:r])
+q8<-q7^2
+X2<-sum(q8)
+Q<-qchisq(1-al2,r-1)
+X2>=Q
+al2<-1-pchisq(X2,r-1); 
+al2
+##############
+##g
+al<-0.05
+r<-3
+P<-function(a){    
+ p[1]<-pexp(b[1],a)
+ i<-2
+ while(i<r){
+ p[i]<-pexp(b[i],a)-pexp(b[i-1],a);
+ i<-i+1;
+}
+p[r]<-1-pexp(b[r-1],a)
+p;}
+X2<-function(a){g<-n*P(a);f<-(nu-g)^2/g;sum(f)} 
+XM<-nlm(X2,p=mean) 
+xb<-qchisq(1-al,r-2)
+XM$minimum<xb
+al2<-1-pchisq(XM$minimum,r-2)
+al2
+
+
+

@@ -1,0 +1,181 @@
+##a
+x <- scan ("input1.txt")
+print (x)
+sortVec <- sort (x)
+print (sortVec)
+table (x)
+f <-function (x,t){z<-x[x<t];length(z)/length(x)}
+xu<-unique(sort(x))
+yu<-0; for (i in 1:length(xu)) yu[i]<-f(x,xu[i]);yu[length(xu)+1]<-1
+z<-stepfun(xu,yu)
+plot (z, verticals=FALSE)
+hist (x, breaks = c(0: max(x)), col = "grey", right = TRUE, freq = TRUE)
+##############
+##b
+mean<-sum(x)/length(x)
+print(mean)
+disp<-sum(x^2)/length(x)-mean^2
+print(disp)
+med<-median(x)
+print(med)
+asym<-sum((x-mean)^3)/length(x)/(disp^(3/2))
+print(asym)
+exc<-(sum((x-mean)^4)/length(x)/(disp^2))-3
+print(exc)
+#mean - мат.ожидание
+#disp - дисперсия
+#med - медиана
+#asym - ассиметрия
+#exc - эксцесс
+a<-0
+b<-1.35
+p<-f(x,b)-f(x,a)
+print (p)
+##############
+##c
+library(maxLik)
+LL<-function(t){sum(dpois(x,t[1],log=TRUE))}
+ml<-maxNR(LL, start=c(1))#максимум функции правдоподобия
+val<-ml$estimate #оценка макс правдоподобия
+print (val)
+print (disp)
+print (mean)
+##############
+##d
+al<-0.1
+xal<-qnorm (1-al/2)
+T<-array(dim=2)
+T[1]<-mean(x)-xal*sqrt(mean(x)/length(x))
+T[2]<-mean(x)+xal*sqrt(mean(x)/length(x))
+print (T)
+##############
+##e
+table (x)
+nu1<-length(x[(x>=0)&(x<0.5)])
+nu2<-length(x[(x>=0.5)&(x<2.5)])
+nu3<-length(x[(x>=2.5)&(x<6)])
+a1<-c(-Inf, 0.5, 2.5)
+b1<-c(0.5, 2.5, Inf)
+r<-3
+pi<-array(dim=r)
+la0<-2.1
+border<-c(0.5,2.5)#массив границ интервалов
+pi[1]<-ppois(border[1],la0)
+pi[r]<-1-ppois(border[r-1],la0)
+pi[2:(r-1)]<-ppois(border[2:(r-1)],la0)-ppois(border[1:(r-2)],la0)
+print (pi)
+q6<-50*pi
+nu<-array(dim=3)
+nu[1]<-nu1
+nu[2]<-nu2
+nu[3]<-nu3
+q7<-(nu-q6)/sqrt(q6)
+q8<-q7^2
+Q<-qchisq(0.9,0.9)
+X2<-sum(q8)
+X2<=Q
+##############
+##f
+print(nu)
+n<-50
+csq<-function(la0){
+p1<-ppois(b1,la0)-ppois(a1,la0)
+f<-sum((nu-n*p)^2/(n*p))
+print(f)
+}
+X2.1<-nlm(csq,p=mean(x))
+xal1<-qchisq(1-al,r-2)
+print(xal1)
+X2.1$minimum<=xal1
+al2<-1-pchisq(1-al,r-2)
+print(al)
+print(al2)
+##############
+##g
+w<-0
+al1<-0.1
+al0<-1-ppois(w,la0*n)-dpois(w,la0*n)
+while(al0>al1){
+w<-w+1
+al0<-1-ppois(w,la0*n)-dpois(w,la0*n)}
+w
+p<-(al1-al0)/dpois(w,la0*n)
+p
+al0
+lche<-sum(x)
+lche>=w
+##меняем гипотезы
+c<-0
+la1<-0.6
+al0<-ppois(c,la1*n)
+while(al0<al1){
+c<-c+1
+al0<-ppois(c,la1*n)
+}
+c<-c-1
+c
+al0<-ppois(c,la1*n)
+p<-(al1-al0)/(dpois(c,la1*n))
+al0
+p
+lche<-sum(x)
+lche<=c
+##############
+##h
+library(maxLik)
+LL<-function(t){sum(dgeom(x,t[1],log=TRUE))}
+ml<-maxNR(LL,start=c(1)) #максимум функции правдоподобия
+val<-ml$estimate; print (val) #оценка макс.правдоподобия
+##
+al<-0.1
+T<-array(dim=2)
+xal<-qnorm (1-al/2)
+T[1]<-mean-xal*sqrt((mean*(mean+1))/length(x))
+T[2]<-mean+xal*sqrt((mean*(mean+1))/length(x)) 
+##
+table (x)
+nu1<-length(x[(x>=0)&(x<0.5)])
+nu2<-length(x[(x>=0.5)&(x<2.5)])
+nu3<-length(x[(x>=2.5)&(x<6)])
+a1<-c(-Inf, 0.5, 2.5)
+b1<-c(0.5, 2.5, Inf)
+r<-3
+pi<-array(dim=r)
+la0<-2.1
+border<-c(0.5,2.5)#массив границ интервалов
+pi[1]<-pgeom(b1[1],1/(la0+1))
+pi[3]<-1-pgeom(b[2],1/(la0+1))
+pi[2]<-pgeom(b1[2],1/(la0+1))-pgeom(b1[1],1/(la0+1))
+print (pi)
+q6<-50*pi
+nu<-array(dim=3)
+nu[1]<-nu1
+nu[2]<-nu2
+nu[3]<-nu3
+q7<-(nu-q6)/sqrt(q6)
+q8<-q7^2
+Q<-qchisq(0.9,0.9)
+X2<-sum(q8)
+X2<=Q
+alpha2<-1-pchisq(X2,2.1)	
+alpha2	
+##
+P<-function(a){  			
+   p[1]<-pgeom(b1[1],1/(la0+1))
+    i<-2
+    while(i<r){
+      p[i]<-pgeom(b1[i],1/(la0+1))-pgeom(b1[i-1],1/(la0+1));
+      i<-i+1;
+      }
+    p[r]<-1-pgeom(b1[r-1],1/(la0+1))
+    p;}
+X2<-function(a){g<-n*P(a);f<-(nu-g)^2/g;sum(f)} 
+XM<-nlm(X2,p=mean) #проводим  минимизацию, 
+xb<-qchisq(1-al,r-2)    #вычисляем квантиль	 		
+XM$minimum<xb	#  гипотезу принимаем на заданном уровне знач.
+alpha2<-1-pchisq(XM$minimum,r-2)
+alpha2
+
+
+
+

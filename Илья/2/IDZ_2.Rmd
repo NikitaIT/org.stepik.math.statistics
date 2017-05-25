@@ -1,0 +1,212 @@
+---
+title: "IDZ 2"
+author: "Nikita Fiodorov"
+date: "21.04.17"
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
+```
+
+<a name="Idz_2"></a>
+### Данные
+
+Даны следующие распределения и параметры:
+
+Тип Распределения			      | Параметры
+----------------------------|--------------
+Коши						            | a in R, b > 0 
+Равномерное				        	| a ≤ b
+
+```{r}
+set.seed(123)
+#выборка данных
+#dir()
+#setwd("")
+#равномерное распределение
+unif = as.data.frame(read.csv("unif_7.csv"));
+#Коши распределение
+cauchy = as.data.frame(read.csv("cauchy_6.csv"));
+#Неизвестное распределение
+type = as.data.frame(read.csv("type8_3.csv"));
+d_View = data.frame(unif=summary(unif)[1:6, 1],cauchy=summary(cauchy)[1:6, 1],type=summary(type)[1:6, 1])
+d_View
+```
+
+### Выполнение работы
+
+#### Выборочная дисперсия, несмещенная выборочная дисперсия, эффективная выборочная дисперсия.
+
+Пусть $X_{1},\ldots ,X_{n},\ldots$  — выборка из распределения вероятности. Тогда
+
+- выборочная дисперсия — это случайная величина $S_{n}^{2}={\frac  {1}{n}}\sum \limits _{{i=1}}^{n}\left(X_{i}-{\bar  {X}}\right)^{2}={\frac  {1}{n}}\sum \limits _{{i=1}}^{n}X_{i}^{2}-\left({\frac  {1}{n}}\sum \limits _{{i=1}}^{n}X_{i}\right)^{2},$
+
+- несмещённая (исправленная) дисперсия — это случайная величина $S^{2}={\frac  {1}{n-1}}\sum \limits _{{i=1}}^{n}\left(X_{i}-{\bar  {X}}\right)^{2}$ или $S^{2}={\frac  {n}{n-1}}S_{n}^{2}.$
+
+- эффективная выборочная дисперсия $S^{x^{2}}={\frac  {n-1}{n+1}}S_{n}^{2}.$ Эта оценка будет не несмещенной;
+Все три выборочные дисперсии являются состоятельными оценками теоретической дисперсии. Если ${\mathrm  {D}}[X_{i}]=\sigma ^{2}<\infty$ , то $S_{n}^{2}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$
+, $S^{2}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$ и $S^{x^{2}}\to ^{{\!\!\!\!\!\!{\mathbb  {P}}}}\;\sigma ^{2}$.
+
+```{r init, cache=TRUE}
+
+
+#параметры
+paramN = list(mean = 0, sd = 1)
+sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
+
+#вычислить  следующие оценки дисперсии:  выборочную дисперсию, 
+#несмещенную выборочную дисперсию,  эффективную выборочную дисперсию. 
+vars<- function(x){sum((x-mean(x))^2)/(length(x))}
+varef<-function(x){(length(x)+1)*var(x)/(length(x)) }
+allProp <- function(x){ c(vars = vars(x),var = var(x),varef=varef(x))}
+
+
+```
+
+####	Для выборок объема `r sizeN` из стандартного нормального закона(`r paramN`)
+
+$$f(x,\mu,\sigma)={\tfrac {1}{\sigma {\sqrt {2\pi }}}}\;e^{-{\frac {(x-\mu )^{2}}{2\sigma ^{2}}}},$$
+$$F(x,0,1) = \frac 1 {\sqrt {2 \pi}} \int _{-\infty} ^x e^{ -\frac {t^2}{2}} dt.$$
+Статистики случайной выборки выборок:
+
+```{r}
+allbind <- function(size,params,FUN=rnorm){
+r = sapply(size,function(x){do.call(rnorm, c(params,x))});
+return(t(as.matrix(sapply(r,allProp))))
+}
+allbind(sizeN,paramN)
+```
+
+#### Абсолютное значение отклонения(=1)
+
+```{r}
+all <- abs(allbind(sizeN,paramN)-1)
+```
+
+В среднем для 10 средних по выборке:
+
+```{r}
+varabs<- function(...){abs(allbind(sizeN,paramN)-1)}
+all<- function(){(varabs()+varabs()+varabs()+varabs()+varabs()+
+                    varabs()+varabs()+varabs()+varabs()+varabs())/10}
+all()
+```
+
+<p align="right"><b>Выводы:</b></p>
+<p align="right"><i>При больших n, асимптотически эффективной оценкой дисперсии 
+является выборочная дисперсия. </i></p></p>
+<p align="right"><i>При больших n, состоятельной оценкой дисперсии 
+является исправленная(не смещенная) выборочная дисперсия.</i></p></p>
+
+----
+
+#### Оценка параметров, использую метод максимального правдоподобия.
+
+```{r}
+library(fitdistrplus);
+```
+
+#### Построение оценки для Коши
+
+$f_{X}(x)={\frac  {1}{\pi \gamma \left[1+\left({\frac  {x-x_{0}}{\gamma }}\right)^{2}\right]}}={1 \over \pi }\left[{\gamma  \over (x-x_{0})^{2}+\gamma ^{2}}\right]$, где ${\displaystyle x_{0}\in \mathbb {R} }$ — параметр сдвига; ${\displaystyle \gamma >0}$ — параметр масштаба.
+
+$$LL(x;x_{0},\gamma)=n*log(\gamma)+\sum n*log(\gamma^2 + (x_{i}−x_{0})^ 2 )$$
+
+Запишем так:
+
+$$\log{\left (\frac{y}{\pi} \frac{1}{y^{2} + \left(x - z\right)^{2}} \right )}$$
+
+Частные производные:
+
+$$\frac{\partial}{\partial y} f{\left (x,y,z \right )} = \frac{1}{y} \left(y^{2} + \left(x - z\right)^{2}\right) \left(- \frac{2 y^{2}}{\left(y^{2} + \left(x - z\right)^{2}\right)^{2}} + \frac{1}{y^{2} + \left(x - z\right)^{2}}\right) = 0$$
+$$\frac{\partial}{\partial z} f{\left (x,y,z \right )} = \frac{2 x - 2 z}{y^{2} + \left(x - z\right)^{2}} =0$$
+
+Эта система не решаема. По этому все вычисления предоставим mledist из библиотеки fitdistrplus. 
+
+#### Построение оценки для равномерного распределения
+
+
+#### Сравнение с Коши
+
+```{r}
+cauchyVcauchy =mledist(data=cauchy$x, distr="cauchy", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(cauchy$x))
+cauchyVcauchy$estimate
+
+```
+
+#### Сравнение с Равномерным
+
+```{r}
+unifVunif = mledist(data=unif$x, distr="unif", optim.method="default",lower=-Inf, upper=Inf,start = formals(unif$x))
+unifVunif$estimate
+```
+
+
+#### Предположение о неизвестном распределении.
+
+```{r}
+checkHistSample = function(x,FUN,params,name){
+hist(x,breaks=25,col="blue",freq=FALSE,main = name)
+expected_sample = do.call(FUN, c(list(x =sort(x)),params))
+lines(sort(x),expected_sample,col="red",lwd=2)
+}
+
+par(mfrow=c(2,2))
+hist(type$x,breaks = 2*length(type$x)^(1/3), freq = F, col = "lightblue");
+hist(rnorm(n = 10^6, mean = 0, sd = 1),freq = F, col = "lightblue");
+hist(rcauchy(n = 10^2,0,0.1),breaks = 50,freq = F, col = "lightblue");
+hist(rt(n = 10^2,df=1),breaks = 50,freq = F, col = "lightblue");
+```
+
+<p align="right"><b>Предположение:</b></p>
+<p align="right"><i>Бета или хи, т.к. тяжелые хвосты и холм</i></p></p>
+
+#### Сравнение с Коши
+
+```{r}
+typeVcauchy = mledist(data=type$x, distr="cauchy", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(type$x))
+typeVcauchy
+```
+Посмотрим гистограмы:
+```{r}
+checkHistSample(type$x,dcauchy,as.list(typeVcauchy$estimate),"typeVcauchy")
+```
+<p align="right"><i>Близко</i></p></p>
+
+
+#### Сравнение с нормальным
+
+```{r}
+typeVnorm = mledist(data=type$x, distr="norm", optim.method="default",
+        lower=-Inf, upper=Inf,start = formals(type$x))
+typeVnorm
+
+```
+
+Посмотрим гистограмы:
+```{r}
+checkHistSample(type$x,dnorm,as.list(typeVnorm$estimate),"typeVnorm")
+```
+Совсем нет.
