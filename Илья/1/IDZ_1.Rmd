@@ -205,7 +205,7 @@ deltaProp
 ###Распределение из файла:
 
 ```{r }
-# читаем темпиратуры
+# читаем температуры
 AnnualDiameter<<-as.data.frame(read.csv("annual-changes-in-the-earths-rot1.csv",col.names = c("AnnualDiameter")));
 ```
 
@@ -223,7 +223,7 @@ hist(AnnualDiameter$AnnualDiameter,
      breaks = 20,
      freq = F, 
      col = "lightblue",
-     xlab = "Темпиратура",
+     xlab = "Температура",
      ylab = "Плотность вероятности",
      main = "Гистограмма, с кривой плотности Темпиратуры"
 );

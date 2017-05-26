@@ -28,6 +28,9 @@ options(scipen = 0, digits = 3)
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
 ```
 
+1)Критерий Колмогорова проверки простой гипотезы согласия.
+
+
 ```{r}
 n<-1000
 alpha1<-0.2
@@ -36,31 +39,45 @@ alpha3<-0.05
 alpha4<-0.01
 def_a<-5
 def_disp<-1
+```
+Выбираете любые три абсолютно непрерывных распределения из списка ниже. Необходимо, чтобы из них: хотя бы одно имело ограниченный носитель, хотя бы одно --- неограниченный (например, бета, нормальное, Коши) Без поголовного списывания, проявите фантазию.  Для этих семейств выбираете параметры θ_0. Генерируете выборки из них объема 1000.
 
-# ГЕНЕРАЦИЯ ВЫБОРКИ
+```{r}
 norm<-rnorm(n,def_a,def_disp)
+norm
 norm<-sort(norm)
+norm
+```
+1) Проверить простую гипотезу θ=θ_0 критерием Колмогорова на уровнях значимости α=0.01, 0.05, 0.1, 0.2. Необходимо реализовать вычисление статистики Колмогорова как вручную, так и вычислить pvalue с помощью стандартной функции. В остальных заданиях необязательно вычислять эту статистику вручную, но хотя бы 1 раз вы должны это проделать.
 
-# ФУНКЦИЯ ПОРОГОВОГО ЗНАЧЕНИЯ КРИТЕРИЯ (КВАНТИЛИ)
+Пороговое значение критерия(квантили):
+(sqrt(-1/2*log(alpha/2))/sqrt(n))
+```{r}
 quantile_kolm=function(alpha,n) {
   return (sqrt(-1/2*log(alpha/2))/sqrt(n))
 }
-
-# ФУНКЦИЯ РАСПРЕДЕЛЕНИЯ В ТОЧКЕ t
+```
+```{r}
 F=function(t){
-  return (pnorm(t,def_a,def_disp))             # ЗДЕСЬ ЗАДАЕТСЯ (EPS)
+  return (pnorm(t,def_a,def_disp))
 }
-
-# ЭМПИРИЧЕСКАЯ ФУНКЦИЯ РАСПРЕДЕЛЕНИЯ
+```
+ecdf
+```{r}
 Fn<-ecdf(norm)
-
+Fn
 l1<-norm[1:(n-1)]
 l2<-norm[2:n]
 m<-min(abs(l1-l2))
 eps<-0.1*m
 
-
-# СТАТИСТИКА МАКСИМАЛЬНОГО ОТКЛОНЕНИЯ
+```
+Статистика максимального отклонения 
+d1<-abs(Fn(y) - F(y))
+  d2<-abs(Fn(y-eps) - F(y))
+  d<-max(d1,d2)
+и максимум считаем для всех в распред.
+```{r}
 Dn<-0
 for(y in norm) {
   d1<-abs(Fn(y) - F(y))
@@ -70,53 +87,67 @@ for(y in norm) {
     Dn<-d
   }
 }
-
+Dn
+```
+Квантили Колмогорова
+```{r}
 q_kolm<-numeric(4)
 q_kolm[1]<-quantile_kolm(alpha1,n)
 q_kolm[2]<-quantile_kolm(alpha2,n)
 q_kolm[3]<-quantile_kolm(alpha3,n)
 q_kolm[4]<-quantile_kolm(alpha4,n)
+q_kolm
 
-
-# ЕСЛИ СТАТИСТИКА Dn МЕНЬШЕ ПОРОГОВОГО ЗНАЧЕНИЯ ПРИ ДАННЫХ ПАРАМЕТРАХ, ПРИНИМАЕТСЯ Н_0. ИНАЧЕ Н_1
-
+```
+Какую гип примем на основе квантилей колм. < макс откл
+```{r}
+# если стат меньше то Н_0. иначе Н_1
+a = ""
 for(i in 1:4) {
   if(Dn < q_kolm[i]) {
+    a =" H_0"
     print("H_0")
   } else {
+    a =" H_1"
     print("H_1")
   }
 }
-
 my_pvalue_kolm<-1-pkolm(Dn,n)
 
-tmp_kolm<-ks.test(norm, "pnorm", def_a, def_disp)        # ЗДЕСЬ ЗАДАЁТСЯ (EPS)
+tmp_kolm<-ks.test(norm, "pnorm", def_a, def_disp)
 pvalue_kolm<-tmp_kolm$p.value
 statistics_kolm<-tmp_kolm$statistic
+```
+3)Провести аналогичные вычисления для простой гипотезы θ=θ_0-ε, для ε=0.001,0.01,0.1,0.5. Сравнить с результатами предыдущего пункта.
 
-###########################################( ХИ КВАДРАТ )###################################################
-
-# КВАНТИЛИ
+Хи квадрат q_chisq:
+```{r}
 q_chisq<-numeric(4)
-q_chisq[1]<-qchisq(1-alpha1/2,n-1)
-q_chisq[2]<-qchisq(1-alpha2/2,n-1)
-q_chisq[3]<-qchisq(1-alpha3/2,n-1)
-q_chisq[4]<-qchisq(1-alpha4/2,n-1)
-
-# РАЗБИЕНИЕ НА ПРОМЕЖУТКИ
+q_chisq[1]<-qchisq(1-alpha1/2,9)
+q_chisq[2]<-qchisq(1-alpha2/2,9)
+q_chisq[3]<-qchisq(1-alpha3/2,9)
+q_chisq[4]<-qchisq(1-alpha4/2,9)
+q_chisq
+```
+Разбиваем на промежутки
+```{r}
+# по промежуткам
 steps<-numeric(9)
 for(i in 1:9) {
   steps[i]<-qnorm(i/10,def_a,def_disp)
 }
-
-# ОЖИДАЕМОЕ И НАБЛЮДАЕМОЕ ПОПАДАНИЕ В ПРОМЕЖУТКИ
+steps
+```
+Смотрим: (наблюдаемые -ожид.)^2 / ожид. знач. попадания в промежутки
+```{r}
 ojidaem=n/10
 nb=hist(norm,breaks=c(min(norm),steps,max(norm)), plot=FALSE)
 nabludaem=nb$counts
-
-# CТАТИСТИКА
+```
+Получаем значение статистики и результаты
+```{r}
 Hi=sum(((nabludaem-ojidaem)^2)/ojidaem)
-
+Hi
 for (i in 1:4) {
   if (Hi <= q_chisq[i]) {
     print("H_0")
@@ -124,33 +155,45 @@ for (i in 1:4) {
     print("H_1")
   }
 }
-
-#PVALUE AND STATISTIC
+```
+p-val и статист. t_chisq
+```{r}
 prob=rep(1/10,each=10)
+prob
 t_chisq=chisq.test(nabludaem,p=prob)
+t_chisq
 pvalue_chisq=t_chisq$p.value
 statistics_chisq=t_chisq$statistic
-
-
-###################################################################################################
+```
+3) Проделать пункты 1 и 2  1000 раз (вычислять только pvalue). Построить гистограммы получившихся pvalue, на их основании ответить на вопрос о равномерности их распределения. Если ответ неочевиден, проверить гипотезу о равномерности на уровне значимости α=0.05 (можно тем же критерием Колмогорова) Прокомментировать полученные результаты.
+```{r}
 
 pvalues<-numeric(1000)
 pvalues_chisq<-vector()
 def_a<-5
 def_disp<-1
-
+```
+pvalues в ks.test(nm,"pnorm",def_a+0.1,def_disp)
+```{r}
 for(i in 1:1000) {
   nm<-rnorm(1000,def_a,def_disp)
   nm<-sort(nm)
-  tmp<-ks.test(nm,"pnorm",def_a+0.1,def_disp)            # ЗДЕСЬ ЗАДАЁТСЯ (EPS)
+  tmp<-ks.test(nm,"pnorm",def_a+0.1,def_disp)
   pvalues[i]<-tmp$p.value
 }
-
-# ПОСТРОЕНИЕ ГИСТОГРАММЫ ДЛЯ ПУНКТА 3 ЗАДАНИЯ 1
+pvalues
+```
+Построить гистограммы получившихся pvalue
+```{r}
 h=hist(pvalues, breaks=30, col="green",freq=FALSE)
+h
 dens<-dunif(sort(pvalues)); lines(sort(pvalues),dens,col="blue",lwd=2)
+```
+2) Критерий хи-квадрат проверки простой гипотезы согласия. 
+Аналогично предыдущему пункту выбираете 3 распределения: дискретное, абсолютно непрерывное с ограниченным носителем, абсолютно непрерывное с неограниченным носителем, причем последние 2 берете такими же, что и для предыдущего задания;  выбираете параметры θ_0;  генерируете выборки из них объема 1000. Также как и выше, необходимо хотя бы раз реализовать вычисление статистики хи-квадрат вручную (по таблице наблюдаемые -- ожидаемые).  Проделать то же самое, что и выше (пункты 1-3) для критерия хи-квадрат.
+Сравнить результаты, полученные для критерия Колмогорова и хи-квадрат, между собой (как частные, так и распределение pvalue) дать комментарий и объяснения. Следует пояснить, что для правильного сравнения необходимо применять эти критерии к одним и тем же выборкам. Поэтому имеет смысл решать задания 1 и 2 одновременно.
 
-# ХИ-КВАДРАТ
+```{r}
 for(i in 1:1000) {
   rl<-rnorm(1000,def_a, def_disp)
   rl<-sort(rl)
@@ -166,9 +209,10 @@ for(i in 1:1000) {
   #pvalues_chisq[i]<-t_chisq$p.value
 }
 h_chisq=hist(pvalues_chisq, breaks=30, col="green", freq=FALSE)
+h_chisq
 ```
 
-
+ДЛЯ БЕТА
 
 ```{r}
 n<-1000
@@ -178,31 +222,41 @@ alpha3<-0.05
 alpha4<-0.01
 def_p<-2
 def_q<-3
+```
+1) Проверить простую гипотезу θ=θ_0 критерием Колмогорова на уровнях значимости α=0.01, 0.05, 0.1, 0.2. Необходимо реализовать вычисление статистики Колмогорова как вручную, так и вычислить pvalue с помощью стандартной функции. В остальных заданиях необязательно вычислять эту статистику вручную, но хотя бы 1 раз вы должны это проделать.
 
-#ГЕНЕРАЦИЯ ВЫБОРКИ
+Пороговое значение критерия(квантили):
+(sqrt(-1/2*log(alpha/2))/sqrt(n))
+```{r}
+
 beta<-rbeta(n,def_p,def_q)
 beta<-sort(beta)
-
-# ( КОЛМОГОРОВ ) ФУНКЦИЯ ПОРОГОВОГО ЗНАЧЕНИЯ КРИТЕРИЯ (КВАНТИЛИ)
+```
+```{r}
 quantile_kolm=function(alpha,n) {
   return (sqrt(-1/2*log(alpha/2))/sqrt(n))
 }
-
-# ( КОЛМОГОРОВ ) ФУНКЦИЯ РАСПРЕДЕЛЕНИЯ В ТОЧКЕ t
+```
+```{r}
 F=function(t){
   return (pbeta(t,def_p+0.001,def_q))             # ЗДЕСЬ ЗАДАЕТСЯ (EPS)
 }
-
-# ( КОЛМОГОРОВ ) ЭМПИРИЧЕСКАЯ ФУНКЦИЯ РАСПРЕДЕЛЕНИЯ
+```
+```{r}
 Fn<-ecdf(beta)
-
+Fn
 l1<-beta[1:(n-1)]
 l2<-beta[2:n]
 m<-min(abs(l1-l2))
 eps<-0.1*m
 
-
-# ( КОЛМОГОРОВ ) СТАТИСТИКА МАКСИМАЛЬНОГО ОТКЛОНЕНИЯ
+```
+Статистика максимального отклонения 
+d1<-abs(Fn(y) - F(y))
+  d2<-abs(Fn(y-eps) - F(y))
+  d<-max(d1,d2)
+и максимум считаем для всех в распред.
+```{r}
 Dn<-0
 for(y in beta) {
   d1<-abs(Fn(y) - F(y))
@@ -212,16 +266,19 @@ for(y in beta) {
     Dn<-d
   }
 }
-
+Dn
+```
+Квантили Колмогорова
+```{r}
 q_kolm<-numeric(4)
 q_kolm[1]<-quantile_kolm(alpha1,n)
 q_kolm[2]<-quantile_kolm(alpha2,n)
 q_kolm[3]<-quantile_kolm(alpha3,n)
 q_kolm[4]<-quantile_kolm(alpha4,n)
-
-
-# ( КОЛМОГОРОВ ) ЕСЛИ СТАТИСТИКА Dn МЕНЬШЕ ПОРОГОВОГО ЗНАЧЕНИЯ ПРИ ДАННЫХ ПАРАМЕТРАХ, ПРИНИМАЕТСЯ Н_0. ИНАЧЕ Н_1
-
+q_kolm
+```
+Какую гип примем на основе квантилей колм. < макс откл
+```{r}
 for(i in 1:4) {
   if(Dn < q_kolm[i]) {
     print("H_0")
@@ -231,33 +288,41 @@ for(i in 1:4) {
 }
 
 my_pvalue_kolm<-1-pkolm(Dn,n)
-tmp_kolm<-ks.test(beta, "pbeta", def_p+0.001, def_q)        # ЗДЕСЬ ЗАДАЁТСЯ (EPS)
+tmp_kolm<-ks.test(beta, "pbeta", def_p+0.001, def_q)
 pvalue_kolm<-tmp_kolm$p.value
 statistics_kolm<-tmp_kolm$statistic
+```
+3)Провести аналогичные вычисления для простой гипотезы θ=θ_0-ε, для ε=0.001,0.01,0.1,0.5. Сравнить с результатами предыдущего пункта.
 
-###########################################( ХИ КВАДРАТ )###################################################
-
-# КВАНТИЛИ
+Хи квадрат q_chisq:
+```{r}
 q_chisq<-numeric(4)
 q_chisq[1]<-qchisq(1-alpha1/2,n-1)
 q_chisq[2]<-qchisq(1-alpha2/2,n-1)
 q_chisq[3]<-qchisq(1-alpha3/2,n-1)
 q_chisq[4]<-qchisq(1-alpha4/2,n-1)
-
-# РАЗБИЕНИЕ НА ПРОМЕЖУТКИ
+q_chisq
+```
+ПРОМЕЖУТКИ
+```{r}
 steps<-numeric(9)
 for(i in 1:9) {
   steps[i]<-qbeta(i/10,def_p,def_q)
 }
-
-# ОЖИДАЕМОЕ И НАБЛЮДАЕМОЕ ПОПАДАНИЕ В ПРОМЕЖУТКИ
+steps
+```
+Смотрим: (наблюдаемые -ожид.)^2 / ожид. знач. попадания в промежутки
+```{r}
 ojidaem=n/10
 nb=hist(beta,breaks=c(min(beta),steps,max(beta)), plot=FALSE)
+nb
 nabludaem=nb$counts
+```
+Статист. и рез
+```{r}
 
-# CТАТИСТИКА
 Hi=sum(((nabludaem-ojidaem)^2)/ojidaem)
-
+Hi
 for (i in 1:4) {
   if (Hi <= q_chisq[i]) {
     print("H_0")
@@ -265,15 +330,19 @@ for (i in 1:4) {
     print("H_1")
   }
 }
+```
+p-val
+```{r}
 
-#PVALUE AND STATISTIC
 prob=rep(1/10,each=10)
 t_chisq=chisq.test(nabludaem,p=prob)
 pvalue_chisq=t_chisq$p.value
 statistics_chisq=t_chisq$statistic
 
+```
+3) Проделать пункты 1 и 2  1000 раз (вычислять только pvalue). Построить гистограммы получившихся pvalue, на их основании ответить на вопрос о равномерности их распределения. Если ответ неочевиден, проверить гипотезу о равномерности на уровне значимости α=0.05 (можно тем же критерием Колмогорова) Прокомментировать полученные результаты.
+```{r}
 
-############################################################################################################
 pvalues_chisq<-vector()
 pvalues<-numeric(1000)
 def_p<-2
@@ -282,14 +351,18 @@ def_q<-3
 for(i in 1:1000) {
   bt<-rbeta(1000,def_p,def_q)
   bt<-sort(bt)
-  tmp<-ks.test(bt,"pbeta",def_p,def_q)            # ЗДЕСЬ ЗАДАЁТСЯ (EPS)
+  tmp<-ks.test(bt,"pbeta",def_p,def_q)    
   pvalues[i]<-tmp$p.value
 }
-
-# ПОСТРОЕНИЕ ГИСТОГРАММЫ ДЛЯ ПУНКТА 3 ЗАДАНИЯ 1
+```
+p знач гист
+```{r}
 h=hist(pvalues, breaks=30, col="green",freq=FALSE)
 dens<-dunif(sort(pvalues)); lines(sort(pvalues),dens,col="blue",lwd=2)
-
+aaaaa=pvalues
+```
+3) Сравнить результаты, полученные для критерия Колмогорова и хи-квадрат, между собой (как частные, так и распределение pvalue) дать комментарий и объяснения. Следует пояснить, что для правильного сравнения необходимо применять эти критерии к одним и тем же выборкам. Поэтому имеет смысл решать задания 1 и 2 одновременно.
+```{r}
 # ХИ-КВАДРАТ
 for(i in 1:1000) {
   rl<-rbeta(1000,def_p, def_q)
@@ -306,5 +379,8 @@ for(i in 1:1000) {
   #pvalues_chisq[i]<-t_chisq$p.value
 }
 h_chisq=hist(pvalues_chisq, breaks=30, col="green", freq=FALSE)
-
+h_chisq
+h=hist(pvalues-pvalues_chisq, breaks=30, col="green",freq=FALSE)
+plot(pvalues-pvalues_chisq)
+w-x=1
 ```

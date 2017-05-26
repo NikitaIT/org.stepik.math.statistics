@@ -1,7 +1,7 @@
 ---
 title: "IDZ 2"
-author: "Nikita Fiodorov"
-date: "21.04.17"
+author: ""
+date: ""
 output:
   html_document:
     keep_md: yes
@@ -103,7 +103,7 @@ allbind(sizeN,paramN)
 all <- abs(allbind(sizeN,paramN)-1)
 ```
 
-В среднем для 10 средних по выборке:
+В для 10 средних по выборке:
 
 ```{r}
 varabs<- function(...){abs(allbind(sizeN,paramN)-1)}
