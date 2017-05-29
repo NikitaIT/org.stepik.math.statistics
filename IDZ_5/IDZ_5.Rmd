@@ -359,7 +359,6 @@ p знач гист
 ```{r}
 h=hist(pvalues, breaks=30, col="green",freq=FALSE)
 dens<-dunif(sort(pvalues)); lines(sort(pvalues),dens,col="blue",lwd=2)
-aaaaa=pvalues
 ```
 3) Сравнить результаты, полученные для критерия Колмогорова и хи-квадрат, между собой (как частные, так и распределение pvalue) дать комментарий и объяснения. Следует пояснить, что для правильного сравнения необходимо применять эти критерии к одним и тем же выборкам. Поэтому имеет смысл решать задания 1 и 2 одновременно.
 ```{r}
@@ -382,5 +381,5 @@ h_chisq=hist(pvalues_chisq, breaks=30, col="green", freq=FALSE)
 h_chisq
 h=hist(pvalues-pvalues_chisq, breaks=30, col="green",freq=FALSE)
 plot(pvalues-pvalues_chisq)
-w-x=1
+
 ```

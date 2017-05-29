@@ -13,3 +13,9 @@ library(xtable)
 library(ggvis)
 library(ggplot2)
 library(fitdistrplus)
+
+#выборка данных
+dir()
+setwd("../IDZ_6/")
+#по 3 выборки из 5ти различных семейств распределений
+goftest<<-as.data.frame(read.csv("goftest_34.csv"))

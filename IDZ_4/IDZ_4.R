@@ -16,162 +16,84 @@ library(ggplot2)
 library(fitdistrplus)
 
 #подготовка функций
-allProp = function(x){ data.frame(mean = mean(x),var = var(x),asm = sum((x-mean(x))^3)/length(x)/var(x)^(3/2),exc = sum((x-mean(x))^4)/length(x)/var(x)^2-3)}
-rgenerate <- function(size,params,FUN=rnorm){
-  sapply(size,function(x){do.call(FUN, c(params,x))})
-}
+  allProp = function(x){ data.frame(mean = mean(x),var = var(x),asm = sum((x-mean(x))^3)/length(x)/var(x)^(3/2),exc = sum((x-mean(x))^4)/length(x)/var(x)^2-3)}
+  rgenerate <- function(size,params,FUN=rnorm){
+    sapply(size,function(x){do.call(FUN, c(params,x))})
+  }
+  #а. тест на нормальность с известной дисперсией 
+  norm_test <- function(X,possible_mean,sd,a_levels) {
+    test = c();
+    #предполагаемое среднее
+    test$possible_mean = possible_mean
+    #значение распределения
+    test$statistic = sqrt(length(X))*(mean(X)-possible_mean)/sd;
+    #пороговое значение
+    test$сritical_value<-qnorm(1-a_levels/2)
+    #принимаем или нет
+    test$a_levels = a_levels
+    test$success = !(abs(test$statistic)>test$сritical_value)
+    #реально достигнутый уровень значимости
+    test$p_value = min(2-2*pnorm(test$statistic),2*pnorm(test$statistic))
+    test
+  }
+  #b. тест на нормальность с не известной дисперсией 
+  t_test <- function(X,possible_mean,a_levels) {
+    test = list();
+    #предполагаемое среднее
+    test$possible_mean = possible_mean
+    #значение распределения
+    test$statistic = sqrt(length(X))*(mean(X)-possible_mean)/sqrt(var(X));
+    #пороговое значение
+    test$сritical_value<-qt(1-a_levels/2,length(X)-1)
+    #принимаем или нет
+    test$a_levels = a_levels
+    test$success = !(abs(test$statistic)>test$сritical_value)
+    #реально достигнутый уровень значимости
+    test$p_value = min(2-2*pt(test$statistic,length(X)-1),2*pt(test$statistic,length(X)-1))
+    test
+  }
+  
 #подготовка данных
-set.seed(100)
-norm_data=as.data.frame(read.csv("51_norm_-23.798434.csv",col.names = c("x")));
-a = c(0.25, 0.1, 0.05, 0.01, 0.001)
-epsilon = c(10, 0.1, 0.01)
+  set.seed(100)
+  norm_data=as.data.frame(read.csv("51_norm_-23.798434.csv",col.names = c("x")));
+  a = c(0.25, 0.1, 0.05, 0.01, 0.001)
+  epsilon = c(10, 0.1, 0.01, 0)
+  paramN = list(mean = -23, sd = 5)
+  sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
+  
+  epsilon_for_bern = c(0.2, 0.1, 0.01)
+  ##В sizeB бросках значение size с вероятностью prob 
+  paramB = list(size = 1, prob =  1/10)
+  sizeB = list(x100=100)
 
-paramN = list(mean = -23, sd = 5)
-sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
-
-epsilon_for_bern = c(0.2, 0.1, 0.01)
-
-##В sizeB бросках значение size с вероятностью prob 
-paramB = list(size = 1, prob =  1/10)
-sizeB = list(x100=100)
-
-norm_data = c(norm_data,rgenerate(sizeN,paramN))
-bern_data = rgenerate(sizeB,paramB,rbinom)
-sum(bern_data)
+  norm_data = c(norm_data,rgenerate(sizeN,paramN))
+  bern_data = rgenerate(sizeB,paramB,rbinom)
+  sum(bern_data)
+  
 #первичная оценка
-sapply(norm_data,summary)
-sapply(norm_data,allProp)
+  sapply(norm_data,summary)
+  sapply(norm_data,allProp)
+  sapply(norm_data,mean)
 
 #обработка данных
+  (t_tests_results = lapply(epsilon, 
+                          function(eps) {
+                            sapply(norm_data[-1],t_test,
+                                   possible_mean = paramN$mean+eps,
+                                   a_levels = (1-a))
+                          }))
 
-pirCount = function(n, k) {
-(k+1)*(n-k+1)
-}
-
-pir(4,0)
-gg = c()
-for(i in 0:100){
-  for(j in 0:i){
-    gg = c(gg,as.character(pirCount(i,j)))
-  }
-}
-head(gg)
-dir()
-writeLines(gg,"res.txt",sep = ",")
-pirCount(2,1)
-pirCount(11,1)
-pirCount(2,0)
-pirCount(3,1)
-pirCount(3,0)
-pirCount(3,2)
-pirCount(4,2)
-f = function(n, k) {
-  if(k<0||k>n) {0
-    } else if(n==0) { 
-    1
-  }else {
-    1+(f(n-1,k-1)+f(n-1,k))/2;
-    }
-}
-f = function(n, k) {
-  row = c(0);
-  if(n<1){
-    return(0)
-  }
-  row[2]=row[1]=2-1/(2^(2-1));
-  if(n==1){
-    return(row)
-  }
-  for(i in 3:(n+1)){
-    temp = row;
-    row[i]=row[1]=2-1/(2^(i-1));
-    for(j in 2:(i-1)){
-      row[j]=(temp[j-1]+temp[j])/2 +1
-    }
-  }
-  row
-}
-f = function(n, k) {
-  row = c(0);
-  for(i in 1:(n+1)){
-    temp = row;
-    row[i]=row[1]=2-1/(2^(i-1));
-    if(i>2){
-      for(j in 2:(i-1)){
-        row[j]=(temp[j-1]+temp[j])/2 +1
-      }
-    }
-  }
-  row
-}
-system.time(a <- f(322,156))
-system.time(a <- f1(322,156))
-
-Rprof(tmp <- tempfile())
-f(322,156)[157]
-example(f)
-Rprof()
-summaryRprof(tmp)
-
-print("-");
-print(l);print(r);
-print("-");
-
-f(0,0)
-f(1,0)
-f(2,0)
-f(2,1)
-f(3,2)
-f(4,2)
-f(5,2)
-f(322,156)[157]
-plot(f(322,156))
-table(f(40,156))
+  (norm_test_results = lapply(epsilon, 
+                            function(eps) {
+                              sapply(norm_data[-1],norm_test,
+                                     possible_mean = paramN$mean+eps,
+                                     a_levels = (1-a),
+                                     sd = paramN$sd)
+                            }))
+  
+#проверка
+  #стандартный тест Стьюдента 
+  (data_ttest = sapply(norm_data[-1],t.test,mu = paramN$mean))
+  slice(as.data.frame(norm_data_ttest), 3)
 
 
-5%%2 == 0
-
-f = function(n, k) {
-  row = c(0);
-  if(n<1){
-    return(0)
-  }
-  row[2]=row[1]=2-1/(2^(2-1));
-  if(n==1){
-    return(row[1])
-  }
-  for(i in 3:(n+1)){
-    temp = row;
-    row[1]=2-1/(2^(i-1));
-    #генерация поколения
-    for(j in 2:(ceiling(i/2))){
-      row[j]=1+(temp[j-1]+temp[j])/2;
-    }
-    #четная строка длиннее
-    if(i%%2 == 0){
-      row[i/2+1]=row[i/2];
-    }
-  }
-  #вывод
-  if(k+1 > n/2){
-    row[n - k+1]
-  }else{
-    row[k+1]
-  }
-}
-322/2
-f(322,156)
-322/2
-f(5422,161)[162]
-f(0,0)
-f1
-f2
-f2 = list(
-  f(0,0),
-  f(1,0),
-  f(2,1),
-  f(3,2),
-  f(4,2),
-  f(5,2),
-  f(6,2))
-f(3,2)

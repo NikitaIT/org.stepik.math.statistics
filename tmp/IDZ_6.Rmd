@@ -1,0 +1,58 @@
+---
+title: "IDZ_6"
+author: "Nikita"
+date: "22.04.17"
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
+```
+##Эмпирическая функция распределения или выборочная ф.р.
+```{r}
+tmpe =c(1,2,3,4,4,5,5,5,1,2);
+sort(tmpe);
+plot.ecdf(tmpe);
+```
+
+1) Расстояние между линиями по оси $F_n(x)$ - то сколько встретился $x$
+
+2) Ось $F_n(x)$ показывает процент того, сколько $x_i<x$ от общего числа в выборке.
+
+##Гистограмма - график приближающий плотность
+```{r}
+sort(tmpe);
+hist(tmpe);
+```
+
+1) Столбик - то сколько элементов попало в промежуток разбиения.
+    - $[1,2] - \{1,1,2,2\};$
+    - $(2,3] - \{3\};$
+    - $(3,4] - \{4,4\};$
+2) Обычно на вертикальной оси $"колличество"/("длинну- интервала"*"общее-колличество")$, тогда сумма площадей 1.
+
+
+ Определение 5. Статистика $\theta^* = \theta^*(X_1,...,X_n)$ называется несмещённой оценкой параметра $\theta$, если для любого θ ∈ Θ выполнено равенство $E\theta^*=\theta$. 
+ 
+ Определение 6. Статистика θ* = θ*(X1,...,Xn) называется асимптотически несмещённой оценкой параметра θ, если для любого θ∈ Θ имеет место сходимость Eθ* →θ при n →∞. 
+ 
+ Определение 7. Статистика θ* = θ*(X1,...,Xn) называется состоятельной оценкой параметра θ, если для любого θ∈ Θ имеет место сходимость θ* p −→θ при n →∞. 
