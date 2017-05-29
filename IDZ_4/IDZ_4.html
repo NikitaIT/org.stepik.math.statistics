@@ -131,7 +131,7 @@ $(document).ready(function () {
 <p>1.1 Провести тестирование и анализ работы алгоритма. <a href>find</a></p>
 <ul>
 <li><p>Сгенерировать выборки длины <span class="math inline">\(10, 100, 1000, 10^{4}\)</span> из нормального распределения.<a href>find</a></p></li>
-<li><p>Гипотезы <span class="math inline">\(H_0=\{ \mu = 0 \}\)</span>, <span class="math inline">\(H_1=\{ \mu \neq 0 \}\)</span> и уровни <span class="math inline">\(\alpha = 0.25, 0.1, 0.05, 0.01, 0.001\)</span> <a href>find</a></p></li>
+<li><p>Гипотезы <span class="math inline">\(H_0=\{ \mu = -23 \}\)</span>, <span class="math inline">\(H_1=\{ \mu \neq -23 \}\)</span> и уровни <span class="math inline">\(\alpha = 0.25, 0.1, 0.05, 0.01, 0.001\)</span> <a href>find</a></p></li>
 <li><p>Построить и применить следующие критерии проверки простой гипотезы согласия <span class="math inline">\(H_0\)</span>: <a href>find</a></p>
 <ol style="list-style-type: lower-alpha">
 <li><p>с известной дисперсией (той, которую задали при генерации) <a href>find</a></p></li>
@@ -144,12 +144,26 @@ $(document).ready(function () {
 <li><p>Вычислить реально достигнутый уровень значимости. Интерпретировать его. <a href>find</a></p></li>
 <li><p>Провести анализ зависимости результатов от длины выборки. <a href>find</a></p></li>
 </ul>
-<p>1.2 Пусть при генерации вы взяли среднее a. Проделать пункт 1.1. для гипотез: <span class="math inline">\(H_0=\{ \mu = \alpha + \epsilon \}\)</span>, где <span class="math inline">\(\epsilon = 10, 0.1, 0.01\)</span>. Интерпретировать зависимость от <span class="math inline">\(\epsilon\)</span>. <a href>find</a></p></li>
+<p>1.2 Пусть при генерации вы взяли среднее a. Проделать пункт 1.1. для гипотез: <span class="math inline">\(H_0=\{ \mu = \alpha + \epsilon \}\)</span>, где <span class="math inline">\(\epsilon = 10, 0.1, 0.01, 0\)</span>. Интерпретировать зависимость от <span class="math inline">\(\epsilon\)</span>. <a href>find</a></p></li>
 <li><p>Предполагаем, что в файле выборка <span class="math inline">\(N(\mu = x, sd = 1)\)</span>. Необходимо проделать пункты a,b,d из задания 1.1. для данной выборки(уровни в пунктах a и b те же) Интерпретировать полученные результаты. <a href>find</a></p></li>
 <li><p>Проделать пункт 1.1. для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (генерируете выборку со своим параметром <span class="math inline">\(p\)</span>; берете те же уровни) <span class="math inline">\({\mathbb {P}}(X=1)=p, {\displaystyle \mathbb {P} (X=0)=q}\)</span> <a href>find</a></p></li>
 <li><p>Проделать пункт 1.2 для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (для <span class="math inline">\(\epsilon = 0.2, 0.1, 0.01\)</span>; следите, чтобы сумма <span class="math inline">\(p+ \epsilon &lt; 1\)</span>) <a href>find</a></p></li>
 <li><p>Вспомнить результаты вашего построения ДИ на базе ОМП. Проверить и протестировать (аналогично 1.1 и 1.2) критерии проверки простой гипотезы согласия, основанные на этих ДИ. <a href>find</a></p></li>
 </ol>
+<div class="section level2">
+<h2>Прикидка</h2>
+<p>Основные характеристики</p>
+<pre><code>##      x     x10   x100   x1000   x10000  
+## mean -23.6 -23.1 -23    -22.9   -23     
+## var  0.497 7.87  27.2   26.4    24.5    
+## asm  0.401 0.18  0.171  -0.0802 -0.00753
+## exc  1.93  -1.42 -0.247 0.0925  0.0471</code></pre>
+<p>Нас больше всего интересует среднее.</p>
+<pre><code>##      x    x10   x100  x1000 x10000 
+##  -23.6  -23.1  -23.0  -22.9  -23.0</code></pre>
+<p>И дисперсия.</p>
+<pre><code>##      x    x10   x100  x1000 x10000 
+##  0.497  7.871 27.217 26.369 24.475</code></pre>
 <div id="a.---------h_0--------" class="section level4">
 <h4>1.1 a. Построить и применить критерии проверки простой гипотезы согласия <span class="math inline">\(H_0\)</span>: с известной дисперсией (той, которую задали при генерации)</h4>
 <p>Имеется выборка <span class="math inline">\(X = (X_1, . . . , X_n)\)</span> из нормального распределения <span class="math inline">\(N_{a,\sigma ^2}\)</span> с известной дисперсией <span class="math inline">\(\sigma^2\)</span>. Проверяется простая гипотеза <span class="math inline">\(H_1 = \{a = m\}\)</span> против сложной альтернативы <span class="math inline">\(H_2 = \{a \neq m\}\)</span>.</p>
@@ -158,6 +172,130 @@ $(document).ready(function () {
 <p>По <span class="math inline">\(\epsilon\)</span> выберем <span class="math inline">\(C = \tau_{1−\epsilon/2}\)</span> — квантиль стандартного нормального распределения. Тогда <span class="math display">\[\epsilon = P_{H_1} (|p(X)| &gt; C)\]</span>.</p>
 <p>Критерий выглядит так:</p>
 <p><span class="math display">\[\delta (X) = \{H_1, если |p(X)| &lt; C;  H_2, если |ρ(X)| &gt; C\}\]</span></p>
+<p><em>1. для сгенерированных распределений</em></p>
+<pre><code>## [[1]]
+##        possible_mean statistic levels p_value 
+## x10    -13           -6.38     List,3 1.76e-10
+## x100   -13           -20       List,3 5.54e-89
+## x1000  -13           -62.5     List,3 0       
+## x10000 -13           -200      List,3 0       
+## 
+## [[2]]
+##        possible_mean statistic levels p_value
+## x10    -22.9         -0.12     List,3 0.904  
+## x100   -22.9         -0.2      List,3 0.842  
+## x1000  -22.9         0.0933    List,3 0.926  
+## x10000 -22.9         -2.36     List,3 0.0181 
+## 
+## [[3]]
+##        possible_mean statistic levels p_value
+## x10    -23           -0.0631   List,3 0.95   
+## x100   -23           -0.0197   List,3 0.984  
+## x1000  -23           0.662     List,3 0.508  
+## x10000 -23           -0.565    List,3 0.572  
+## 
+## [[4]]
+##        possible_mean statistic levels p_value
+## x10    -23           -0.0568   List,3 0.955  
+## x100   -23           0.00034   List,3 1      
+## x1000  -23           0.726     List,3 0.468  
+## x10000 -23           -0.365    List,3 0.715</code></pre>
+<p>По уровням.</p>
+<pre><code>## $x10
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10
+##   critical_value a_levels success
+## 1        0.31864    0.750    TRUE
+## 2        0.12566    0.900    TRUE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31864    0.750    TRUE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31864    0.750    TRUE
+## 2        0.12566    0.900    TRUE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10
+##   critical_value a_levels success
+## 1        0.31864    0.750    TRUE
+## 2        0.12566    0.900    TRUE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31864    0.750    TRUE
+## 2        0.12566    0.900    TRUE
+## 3        0.06271    0.950    TRUE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE</code></pre>
 </div>
 <div id="b.---------h_0---." class="section level4">
 <h4>1.1 b. Построить и применить критерии проверки простой гипотезы согласия <span class="math inline">\(H_0\)</span>: с неизвестной дисперсией.</h4>
@@ -166,6 +304,311 @@ $(document).ready(function () {
 <p>Очевидно, при выполнении нулевой гипотезы <span class="math inline">\({\displaystyle E({\overline {X}})=m}\)</span>. С учётом предполагаемой независимости наблюдений <span class="math inline">\({\displaystyle V({\overline {X}})=\sigma ^{2}/n}\)</span>. Используя несмещенную оценку дисперсии <span class="math inline">\({\displaystyle s_{X}^{2}=\sum _{t=1}^{n}(X_{t}-{\overline {X}})^{2}/(n-1)}\)</span> получаем следующую t-статистику:</p>
 <p><span class="math display">\[{\displaystyle t={\frac {{\overline {X}}-m}{s_{X}/{\sqrt {n}}}}}\]</span></p>
 <p>При нулевой гипотезе распределение этой статистики <span class="math inline">\({\displaystyle t(n-1)}\)</span>. Следовательно, при превышении значения статистики по абсолютной величине критического значения данного распределения (при заданном уровне значимости) нулевая гипотеза отвергается.</p>
+<p><em>1. для сгенерированных распределений</em></p>
+<pre><code>## [[1]]
+##        possible_mean statistic levels p_value 
+## x10    -13           -11.4     List,3 1.22e-06
+## x100   -13           -19.2     List,3 4.31e-35
+## x1000  -13           -60.9     List,3 0       
+## x10000 -13           -203      List,3 0       
+## 
+## [[2]]
+##        possible_mean statistic levels p_value
+## x10    -22.9         -0.214    List,3 0.835  
+## x100   -22.9         -0.191    List,3 0.849  
+## x1000  -22.9         0.0908    List,3 0.928  
+## x10000 -22.9         -2.39     List,3 0.0169 
+## 
+## [[3]]
+##        possible_mean statistic levels p_value
+## x10    -23           -0.112    List,3 0.913  
+## x100   -23           -0.0188   List,3 0.985  
+## x1000  -23           0.645     List,3 0.519  
+## x10000 -23           -0.571    List,3 0.568  
+## 
+## [[4]]
+##        possible_mean statistic levels p_value
+## x10    -23           -0.101    List,3 0.922  
+## x100   -23           0.000326  List,3 1      
+## x1000  -23           0.707     List,3 0.48   
+## x10000 -23           -0.368    List,3 0.713</code></pre>
+<p>Видим, что для имеющихся выборочных данных t-критерий составляет <span class="math inline">\(statistic\)</span> при <span class="math inline">\(x\{N-1\}\)</span> степенях свободы (df). Вероятность получить такое (либо большее) значение t при условии, что проверяемая нулевая гипотеза верна, оказалась весьма высока: <span class="math inline">\(p\_value\)</span>. Следовательно, мы можем принять проверяемую нулевую гипотезу о равенстве выборочного среднего значения нормативу и отклонить альтернативную гипотезу. Делая это, мы рискуем ошибиться с вероятностью менее <span class="math inline">\(1-a\_levels\)</span>.</p>
+<pre><code>## $x10
+##   critical_value a_levels success
+## 1        0.32857    0.750   FALSE
+## 2        0.12925    0.900   FALSE
+## 3        0.06448    0.950   FALSE
+## 4        0.01289    0.990   FALSE
+## 5        0.00129    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31953    0.750   FALSE
+## 2        0.12598    0.900   FALSE
+## 3        0.06287    0.950   FALSE
+## 4        0.01257    0.990   FALSE
+## 5        0.00126    0.999   FALSE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31873    0.750   FALSE
+## 2        0.12569    0.900   FALSE
+## 3        0.06272    0.950   FALSE
+## 4        0.01254    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31865    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10
+##   critical_value a_levels success
+## 1        0.32857    0.750    TRUE
+## 2        0.12925    0.900   FALSE
+## 3        0.06448    0.950   FALSE
+## 4        0.01289    0.990   FALSE
+## 5        0.00129    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31953    0.750    TRUE
+## 2        0.12598    0.900   FALSE
+## 3        0.06287    0.950   FALSE
+## 4        0.01257    0.990   FALSE
+## 5        0.00126    0.999   FALSE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31873    0.750    TRUE
+## 2        0.12569    0.900    TRUE
+## 3        0.06272    0.950   FALSE
+## 4        0.01254    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31865    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10
+##   critical_value a_levels success
+## 1        0.32857    0.750    TRUE
+## 2        0.12925    0.900    TRUE
+## 3        0.06448    0.950   FALSE
+## 4        0.01289    0.990   FALSE
+## 5        0.00129    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31953    0.750    TRUE
+## 2        0.12598    0.900    TRUE
+## 3        0.06287    0.950    TRUE
+## 4        0.01257    0.990   FALSE
+## 5        0.00126    0.999   FALSE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31873    0.750   FALSE
+## 2        0.12569    0.900   FALSE
+## 3        0.06272    0.950   FALSE
+## 4        0.01254    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31865    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10
+##   critical_value a_levels success
+## 1        0.32857    0.750    TRUE
+## 2        0.12925    0.900    TRUE
+## 3        0.06448    0.950   FALSE
+## 4        0.01289    0.990   FALSE
+## 5        0.00129    0.999   FALSE
+## 
+## $x100
+##   critical_value a_levels success
+## 1        0.31953    0.750    TRUE
+## 2        0.12598    0.900    TRUE
+## 3        0.06287    0.950    TRUE
+## 4        0.01257    0.990    TRUE
+## 5        0.00126    0.999    TRUE
+## 
+## $x1000
+##   critical_value a_levels success
+## 1        0.31873    0.750   FALSE
+## 2        0.12569    0.900   FALSE
+## 3        0.06272    0.950   FALSE
+## 4        0.01254    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## $x10000
+##   critical_value a_levels success
+## 1        0.31865    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>Значения статистики отклонения меньше, когда известна дисперсия и больше в противном случае. С увиличением обьема выборки зависимость слабеет.</p></li>
+<li><p>Очевидно, что чем больше <span class="math inline">\(e\)</span>, тем больше значение статистики отклонения и тем меньше вероятность принятия основной гипотезы.</p></li>
+</ol>
+<ol start="2" style="list-style-type: decimal">
+<li>Предполагаем, что в файле выборка <span class="math inline">\(N(\mu = x, sd = 1)\)</span>. Необходимо проделать пункты a,b,d из задания 1.1. для данной выборки(уровни в пунктах a и b те же) Интерпретировать полученные результаты.</li>
+</ol>
+<pre><code>##               x       
+## possible_mean -23.8   
+## statistic     6.79    
+## levels        List,3  
+## p_value       1.96e-11</code></pre>
+<pre><code>## [[1]]
+##   critical_value a_levels success
+## 1        0.31873    0.750   FALSE
+## 2        0.12569    0.900   FALSE
+## 3        0.06272    0.950   FALSE
+## 4        0.01254    0.990   FALSE
+## 5        0.00125    0.999   FALSE</code></pre>
+<pre><code>##               x       
+## possible_mean -23.8   
+## statistic     4.79    
+## levels        List,3  
+## p_value       1.71e-06</code></pre>
+<pre><code>## [[1]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Проделать пункт 1.1. для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (генерируете выборку со своим параметром <span class="math inline">\(p\)</span>; берете те же уровни) <span class="math inline">\({\mathbb {P}}(X=1)=p, {\displaystyle \mathbb {P} (X=0)=q}\)</span></li>
+</ol>
+<p>По теореме Муавра-Лапласа, с ростом n форма биномиальной фигуры распределения становится похожа на плавную кривую Гаусса.</p>
+<pre><code>## [[1]]
+##      possible_prob statistic levels p_value
+## [1,] 0.2           -3.25     List,3 0.00115
+## 
+## [[2]]
+##      possible_prob statistic levels p_value
+## [1,] 0.11          -1.28     List,3 0.201  
+## 
+## [[3]]
+##      possible_prob statistic levels p_value
+## [1,] 0.1           -1        List,3 0.317</code></pre>
+<pre><code>## [[1]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## [[2]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## [[3]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Проделать пункт 1.2 для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (для <span class="math inline">\(\epsilon = 0.2, 0.1, 0.01\)</span>; следите, чтобы сумма <span class="math inline">\(p+ \epsilon &lt; 1\)</span>)</li>
+</ol>
+<pre><code>## [[1]]
+##      possible_prob statistic levels p_value 
+## [1,] 0.3           -5.02     List,3 5.19e-07
+## 
+## [[2]]
+##      possible_prob statistic levels p_value
+## [1,] 0.2           -3.25     List,3 0.00115
+## 
+## [[3]]
+##      possible_prob statistic levels p_value
+## [1,] 0.11          -1.28     List,3 0.201</code></pre>
+<pre><code>## [[1]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## [[2]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE
+## 
+## [[3]]
+##   critical_value a_levels success
+## 1        0.31864    0.750   FALSE
+## 2        0.12566    0.900   FALSE
+## 3        0.06271    0.950   FALSE
+## 4        0.01253    0.990   FALSE
+## 5        0.00125    0.999   FALSE</code></pre>
+<p>Проверим работает ли это вообще, на идеальной выборке.</p>
+<pre><code>## [1] 10</code></pre>
+<pre><code>##      possible_prob statistic levels p_value
+## [1,] 0.1           0         List,3 1</code></pre>
+<pre><code>## [[1]]
+##   critical_value a_levels success
+## 1        0.31864    0.750    TRUE
+## 2        0.12566    0.900    TRUE
+## 3        0.06271    0.950    TRUE
+## 4        0.01253    0.990    TRUE
+## 5        0.00125    0.999    TRUE</code></pre>
+<p>Сверим стандартный тест Стьюдента и наш.</p>
+<pre><code>##             x10                 x100                x1000              
+## statistic   -0.101              0.000326            0.707              
+## parameter   9                   99                  999                
+## p.value     0.922               1                   0.48               
+## conf.int    Numeric,2           Numeric,2           Numeric,2          
+## estimate    -23.1               -23                 -22.9              
+## null.value  -23                 -23                 -23                
+## alternative &quot;two.sided&quot;         &quot;two.sided&quot;         &quot;two.sided&quot;        
+## method      &quot;One Sample t-test&quot; &quot;One Sample t-test&quot; &quot;One Sample t-test&quot;
+## data.name   &quot;X[[i]]&quot;            &quot;X[[i]]&quot;            &quot;X[[i]]&quot;           
+##             x10000             
+## statistic   -0.368             
+## parameter   9999               
+## p.value     0.713              
+## conf.int    Numeric,2          
+## estimate    -23                
+## null.value  -23                
+## alternative &quot;two.sided&quot;        
+## method      &quot;One Sample t-test&quot;
+## data.name   &quot;X[[i]]&quot;</code></pre>
+<pre><code>##             x                  
+## statistic   6.79               
+## parameter   999                
+## p.value     1.96e-11           
+## conf.int    Numeric,2          
+## estimate    -23.6              
+## null.value  -23.8              
+## alternative &quot;two.sided&quot;        
+## method      &quot;One Sample t-test&quot;
+## data.name   &quot;X[[i]]&quot;</code></pre>
+</div>
 </div>
 </div>
 

@@ -33,17 +33,80 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = 
 ```{r cache=T}
 set.seed(100)
 #подготовка функций
-allProp = function(x){ data.frame(mean = mean(x),var = var(x),asm = sum((x-mean(x))^3)/length(x)/var(x)^(3/2),exc = sum((x-mean(x))^4)/length(x)/var(x)^2-3)}
-
+  allProp = function(x){ data.frame(mean = mean(x),var = var(x),asm = sum((x-mean(x))^3)/length(x)/var(x)^(3/2),exc = sum((x-mean(x))^4)/length(x)/var(x)^2-3)}
+  rgenerate <- function(size,params,FUN=rnorm){
+    sapply(size,function(x){do.call(FUN, c(params,x))})
+  }
+   #а. тест на нормальность с известной дисперсией 
+  norm_test <- function(X,possible_mean,sd,a_levels) {
+    test = c();
+    #предполагаемое среднее
+    test$possible_mean = possible_mean
+    #значение распределения
+    test$statistic = sqrt(length(X))*(mean(X)-possible_mean)/sd;
+    #пороговое значение
+    tmp = data.frame(critical_value = qnorm(1-a_levels/2))
+    #принимаем или нет
+    tmp = cbind(tmp,a_levels)
+    tmp = cbind(tmp,success = !(abs(test$statistic)>tmp$critical_value))
+    test$levels = tmp
+    #реально достигнутый уровень значимости
+    test$p_value = min(2-2*pnorm(test$statistic),2*pnorm(test$statistic))
+    test
+  }
+  #b. тест на нормальность с не известной дисперсией 
+  t_test <- function(X,possible_mean,a_levels) {
+    test = list();
+    #предполагаемое среднее
+    test$possible_mean = possible_mean
+    #значение распределения
+    test$statistic = sqrt(length(X))*(mean(X)-possible_mean)/sqrt(var(X));
+    #пороговое значение
+    tmp = data.frame(critical_value = qt(1-a_levels/2,length(X)-1))
+    #принимаем или нет
+    tmp = cbind(tmp,a_levels)
+    tmp = cbind(tmp,success = !(abs(test$statistic)>tmp$critical_value))
+    test$levels = tmp
+    #реально достигнутый уровень значимости
+    test$p_value = min(2-2*pt(test$statistic,length(X)-1),2*pt(test$statistic,length(X)-1))
+    test
+  }
+  #4. тест бернули
+  bern_test <- function(X,possible_prob,a_levels) {
+    test = list();
+    #предполагаемое среднее
+    test$possible_prob = possible_prob
+    #значение распределения
+    test$statistic = length(X)*(mean(X)-possible_prob)/sqrt(length(X)*possible_prob*(1-possible_prob));
+    #пороговое значение
+    tmp = data.frame(critical_value = qnorm(1-a_levels/2))
+    #принимаем или нет
+    tmp = cbind(tmp,a_levels)
+    tmp = cbind(tmp,success = !(abs(test$statistic)>tmp$critical_value))
+    test$levels = tmp
+    #реально достигнутый уровень значимости
+    test$p_value = min(2-2*pnorm(test$statistic),2*pnorm(test$statistic))
+    test
+  }
+  
 #подготовка данных
 set.seed(100)
-norm_data=as.data.frame(read.csv("51_norm_-23.798434.csv",col.names = c("x")));
-paramN = list(mean = 0, sd = 1)
-sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
-a = c(0.25, 0.1, 0.05, 0.01, 0.001)
-epsilon = c(10, 0.1, 0.01)
-epsilon_for_binom = c(0.2, 0.1, 0.01)
+  norm_data=as.data.frame(read.csv("51_norm_-23.798434.csv",col.names = c("x")));
+  paramFile = list(mean = -23.798434,sd = 1)#из назв.файла и sd = 1(всегда)
+  a = c(0.25, 0.1, 0.05, 0.01, 0.001)
+  epsilon = c(10, 0.1, 0.01, 0)
+  paramN = list(mean = -23, sd = 5)#выбираются случ. знач.
+  sizeN = list(x10 = 10,x100=100,x1000=1000,x10000=10000)
+  
+  epsilon_for_bern = c(0.2, 0.1, 0.01)
+  ##В sizeB бросках значение size с вероятностью prob 
+  paramB = list(size = 1, prob =  1/10)
+  sizeB = list(x100=100)
+
+  norm_data = c(norm_data,rgenerate(sizeN,paramN))
+  bern_data = rgenerate(sizeB,paramB,rbinom)
 ```
+
 
 Порядок работы:
 
@@ -72,19 +135,34 @@ epsilon_for_binom = c(0.2, 0.1, 0.01)
       -   Вычислить реально достигнутый уровень значимости. Интерпретировать его. [ find]()
         
       -   Провести анализ зависимости результатов от длины выборки. [ find]()
-
+    
     1.2  Пусть при генерации вы взяли среднее a. Проделать пункт 1.1. для гипотез:  $H_0=\{ \mu = \alpha + \epsilon \}$, где $\epsilon = `r epsilon`$. Интерпретировать зависимость от $\epsilon$. [ find]()
 
 2.  Предполагаем, что в файле выборка $N(\mu = x, sd = 1)$. Необходимо проделать пункты a,b,d из задания 1.1. для данной выборки(уровни в пунктах a и b те же) Интерпретировать полученные результаты. [ find]()
 
 3.   Проделать пункт 1.1.  для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (генерируете выборку со своим параметром $p$; берете те же уровни) ${\mathbb  {P}}(X=1)=p, {\displaystyle \mathbb {P} (X=0)=q}$ [ find]()
 
-4.   Проделать пункт 1.2  для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (для $\epsilon = `r epsilon_for_binom`$; следите, чтобы сумма $p+ \epsilon < 1$) [ find]()
+4.   Проделать пункт 1.2  для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (для $\epsilon = `r epsilon_for_bern`$; следите, чтобы сумма $p+ \epsilon < 1$) [ find]()
 
 5.   Вспомнить результаты вашего построения ДИ на базе ОМП.  Проверить и протестировать (аналогично 1.1 и 1.2) критерии проверки простой гипотезы согласия, основанные на этих ДИ. [ find]()
 
 
 
+##Прикидка
+
+Основные характеристики
+```{r}
+  sapply(norm_data,allProp)
+```
+
+Нас больше всего интересует среднее.
+```{r}
+  sapply(norm_data,mean)
+```
+И дисперсия.
+```{r}
+  sapply(norm_data,var)
+```
 
 #### 1.1 a. Построить  и применить критерии проверки простой гипотезы согласия $H_0$: с известной дисперсией (той, которую задали при генерации)
 Имеется выборка $X = (X_1, . . . , X_n)$ из нормального распределения $N_{a,\sigma ^2}$ с известной дисперсией $\sigma^2$. Проверяется простая гипотеза $H_1 = \{a = m\}$ против сложной альтернативы $H_2 = \{a \neq m\}$.
@@ -101,6 +179,22 @@ $$p(X)={\frac {{\overline {X}}-m}{s_{X}/{\sqrt {n}}}}$$.
 
 $$\delta (X) = \{H_1, если |p(X)| < C;  H_2, если |ρ(X)| > C\}$$
 
+*1. для сгенерированных распределений*
+```{r}
+(norm_test_results = (lapply(epsilon, 
+                            function(eps) {
+                              t(sapply(norm_data[-1],norm_test,
+                                     possible_mean = paramN$mean+eps,
+                                     a_levels = (1-a),
+                                     sd = paramN$sd))
+                            })))
+```
+По уровням.
+```{r}
+tmp = rbind(norm_test_results[[1]],norm_test_results[[2]],norm_test_results[[3]])
+tmp[,3]
+
+```
 
 #### 1.1 b. Построить  и применить критерии проверки простой гипотезы согласия $H_0$: с неизвестной дисперсией.
                 
@@ -113,3 +207,91 @@ $$\delta (X) = \{H_1, если |p(X)| < C;  H_2, если |ρ(X)| > C\}$$
 $${\displaystyle t={\frac {{\overline {X}}-m}{s_{X}/{\sqrt {n}}}}}$$
 
 При нулевой гипотезе распределение этой статистики ${\displaystyle t(n-1)}$. Следовательно, при превышении значения статистики по абсолютной величине критического значения данного распределения (при заданном уровне значимости) нулевая гипотеза отвергается.
+
+*1. для сгенерированных распределений*
+```{r}
+  #1. для сгенерированных распределений
+  (t_tests_results = lapply(epsilon, 
+                          function(eps) {
+                            t(sapply(norm_data[-1],t_test,
+                                   possible_mean = paramN$mean+eps,
+                                   a_levels = (1-a)))
+                          }))
+```
+Видим, что для имеющихся выборочных данных t-критерий составляет $statistic$ при $x\{N-1\}$ степенях свободы (df). Вероятность получить такое (либо большее) значение t при условии, что проверяемая нулевая гипотеза верна, оказалась весьма высока: $p\_value$. Следовательно, мы можем принять проверяемую нулевую гипотезу о равенстве выборочного среднего значения нормативу и отклонить альтернативную гипотезу. Делая это, мы рискуем ошибиться с вероятностью менее $1-a\_levels$.
+```{r}
+tmp = rbind(t_tests_results[[1]],t_tests_results[[2]],t_tests_results[[3]],t_tests_results[[4]])
+  tmp[,3]
+```
+
+
+1) Значения статистики отклонения меньше, когда известна дисперсия и больше в противном случае. С увиличением обьема выборки зависимость слабеет.
+
+2) Очевидно, что чем больше $e$, тем больше значение статистики отклонения и тем меньше вероятность принятия основной гипотезы.
+
+
+
+
+2.  Предполагаем, что в файле выборка $N(\mu = x, sd = 1)$. Необходимо проделать пункты a,b,d из задания 1.1. для данной выборки(уровни в пунктах a и b те же) Интерпретировать полученные результаты.
+
+```{r}
+(t_test_from_file_results = sapply(norm_data[1],t_test,
+         possible_mean = paramFile$mean,
+         a_levels = (1-a)))
+t_test_from_file_results[3]
+  (norm_test_from_file_results = sapply(norm_data[1],norm_test,
+         possible_mean = paramFile$mean,
+         a_levels = (1-a),
+         sd = paramFile$sd))
+norm_test_from_file_results[3]
+
+```
+
+3.   Проделать пункт 1.1.  для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (генерируете выборку со своим параметром $p$; берете те же уровни) ${\mathbb  {P}}(X=1)=p, {\displaystyle \mathbb {P} (X=0)=q}$
+
+По теореме Муавра-Лапласа, с ростом n форма биномиальной фигуры распределения становится похожа на плавную кривую Гаусса.
+
+```{r}
+(bern_test_results = (lapply(epsilon[-1], 
+                               function(eps) {
+                                 t(bern_test(bern_data,
+                                             possible_prob = paramB$prob+eps,
+                                             a_levels = (1-a)))
+                               })))
+  tmp = rbind(bern_test_results[[1]],bern_test_results[[2]],bern_test_results[[3]])
+  tmp[,3]
+```
+
+4.   Проделать пункт 1.2  для задачи о проверки простой гипотезы согласия о параметрах распределения Бернулли (для $\epsilon = `r epsilon_for_bern`$; следите, чтобы сумма $p+ \epsilon < 1$)
+
+```{r}
+(bern_test_results = (lapply(epsilon_for_bern, 
+                               function(eps) {
+                                 t(bern_test(bern_data,
+                                          possible_prob = paramB$prob+eps,
+                                          a_levels = (1-a)))
+                               })))
+  tmp = rbind(bern_test_results[[1]],bern_test_results[[2]],bern_test_results[[3]])
+  tmp[,3]
+```
+
+Проверим работает ли это вообще, на идеальной выборке.
+```{r}
+  bern_data[1]=1
+  bern_data[2]=1
+  bern_data[3]=1
+  sum(bern_data)
+  (tmp =t(bern_test(bern_data,
+              possible_prob = paramB$prob,
+              a_levels = (1-a))))
+  tmp[3]
+```
+
+Сверим стандартный тест Стьюдента и наш.
+```{r}
+#проверка
+  #стандартный тест Стьюдента 
+  (data_ttest = sapply(norm_data[-1],t.test,mu = paramN$mean))
+  (data_ttest = sapply(norm_data[1],t.test,mu = paramFile$mean))
+```
+  
