@@ -425,11 +425,11 @@ $${\displaystyle t={\frac {{\overline {X}}-m}{s_{X}/{\sqrt {n}}}}}$$
 ```
 
 ```
-##               x       
-## possible_mean -23.8   
-## statistic     4.79    
-## levels        List,3  
-## p_value       1.71e-06
+##               x     
+## possible_mean -23.8 
+## statistic     9.63  
+## levels        List,3
+## p_value       0
 ```
 
 ```

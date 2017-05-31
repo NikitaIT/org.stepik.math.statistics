@@ -13,6 +13,8 @@ library(xtable)
 library(ggvis)
 library(ggplot2)
 library(maxLik)
+dir()
+setwd("../IDZ_7_malov/")
 #init
   set.seed(100);
   #   выборочный эксцесс
@@ -88,8 +90,7 @@ library(maxLik)
   Xi2>xal
   #находим наибольший уровень значимости, при котором нет оснований отвергнуть гипотезу:
   al2<-1-pchisq(Xi2,r-1); al2 	
-#
-  
+#f.
   csq<-function (t){  #для X2
     p<-pnorm(b1,0,t) - pnorm (a1,0,t);
     f<-sum((nu-n*p)^2/(n*p));
@@ -101,7 +102,7 @@ library(maxLik)
   X2$minimum<=xal1
   alpha2<-1-pchisq(X2$minimum,r-2)
   print (alpha2)
-  ############################################
+#g.
   c<-0
   alpha1<-0.02
   lambda0 = lamda_0
@@ -132,12 +133,13 @@ library(maxLik)
   p
   lche<- sum(x)
   lche<=c   	
-  #################################################
+#геометрическое распределение
+  #c.
   library(maxLik)
   LL<-function(t){sum(dgeom(x,t[1],log=TRUE))}
   ml<-maxNR(LL,start=c(1)) #максимум функции правдоподобия
   val<-ml$estimate; print (val) #оценка макс.правдоподобия
-  #################################################
+  #довер инт
   alpha<-0.02
   T<-array(dim=2)
   xal<-qnorm (1-alpha/2)
@@ -182,8 +184,7 @@ library(maxLik)
   XM$minimum<xb				#  гипотезу принимаем на заданном уровне знач.
   alpha2<-1-pchisq(XM$minimum,r-2)	#наибольший уровень значимости, на котором 
   alpha2		
-  ################################################################ !!!!!!!!!!!!!!!!!
-  
+
   
   
   

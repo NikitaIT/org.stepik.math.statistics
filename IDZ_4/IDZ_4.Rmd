@@ -92,7 +92,7 @@ set.seed(100)
 #подготовка данных
 set.seed(100)
   norm_data=as.data.frame(read.csv("51_norm_-23.798434.csv",col.names = c("x")));
-  paramFile = list(mean = -23.798434,sd = 1)#из назв.файла и sd = 1(всегда)
+  paramFile = list(mean = -23.798434,sd = var(norm_data$x))#из назв.файла и sd = 1(всегда)
   a = c(0.25, 0.1, 0.05, 0.01, 0.001)
   epsilon = c(10, 0.1, 0.01, 0)
   paramN = list(mean = -23, sd = 5)#выбираются случ. знач.

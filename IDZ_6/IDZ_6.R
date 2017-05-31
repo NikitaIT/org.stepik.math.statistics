@@ -94,6 +94,6 @@ rbind(check(sample = goftest$X1_cauchy,pFUN = pcauchy),
       check(sample = goftest$X3_chisq,pFUN = pgamma)
       )
 print(res1)
-a = check(sample = goftest$X1_pois,pFUN = ppois)
+a = check(sample = goftest$X1_pois,pFUN = pnorm)
 check(sample = goftest$X1_chisq,pFUN = pchisq)
 check(sample = goftest$X1_nbinom_m.10,pFUN = pnbinom)
