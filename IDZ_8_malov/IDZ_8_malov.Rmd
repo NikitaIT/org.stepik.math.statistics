@@ -1,0 +1,259 @@
+---
+title: "IDZ_6"
+author: "Nikita"
+date: "22.04.17"
+output:
+  html_document:
+    keep_md: yes
+    output: null
+    toc_float: yes0
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+  word_document: default
+  github_document: rmarkdown::github_document
+params:
+  bibliography: bibl.bib
+  urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+list.of.packages <- c("stargazer","maxLik","rmarkdown","revealjs","dplyr","tidyr","xtable","ggvis","ggplot2", "Rcpp","fitdistrplus")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+library(dplyr)
+library(tidyr)
+library(stargazer)
+library(xtable)
+library(ggvis)
+library(ggplot2)
+library(fitdistrplus)
+library(maxLik)
+
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,fig.path = "README_figs/README-")
+
+options(xtable.floating = FALSE)
+options(xtable.timestamp = "")
+options(width = 60)
+set.seed(1234)
+```
+
+
+#Однофакторный дисперсионный анализ
+
+```{r cache=TRUE}
+experimentResults = data.frame()
+experimentResults = as.data.frame(factor(as.vector(read.table("X.txt",sep = " ",dec = "."),mode = "double"),labels=c("O","I","II","III","IV"),ordered = T));
+experimentResults = cbind(experimentResults,as.vector(read.table("Y.txt",sep = " ",dec = "."),mode = "double"));
+colnames(experimentResults) = c("factor","value")
+```
+
+Датасет подготовленный для работы.
+```{r}
+str(experimentResults)
+ggplot(experimentResults, aes(x = as.numeric(row.names(experimentResults)), y = value)) + 
+  geom_point(aes(color = factor))
+```
+
+Начальные предположения.
+
+- Выборки случайно и взаимно независимы
+- Ген.сов имеет нормальный закон распределения
+- Ген. сов имеют равные дисперсии
+
+Проверим что выборки распределены одинакого тестом Крускала.
+```{r}
+kruskal.test(value ~ factor, data = experimentResults)
+```
+Значение р оказывается совсем не близким к нулю. Поэтому мы не можем отвергнуть нулевую гипотезу о одинаковом распределении.
+
+Посмотрим boxplot
+
+```{r}
+ggplot(experimentResults, aes(x = factor, y = value,color=factor)) + 
+  geom_boxplot()
+```
+
+- медиана I фактора и IV выше всех
+- IV фактор представлен 1 наблюдением
+- самый большой разброс у II фактора
+- наиб различие между IV и II гр.
+- явных различий между факторами не наблюдается
+
+Средние + errorbar
+```{r}
+pd = position_dodge(0.1)
+ggplot(experimentResults, aes(x = factor, y = value, color = factor, group = factor)) + 
+  stat_summary(fun.data = mean_cl_boot, geom = 'errorbar', width = 0.2, lwd = 0.8, position = pd)+  
+  stat_summary(fun.data = mean_cl_boot, geom = 'point', size = 5, position = pd, pch=15) +
+  theme_bw()
+```
+
+Так же имеющиеся данные можно представить в виде одномерной диаграммы рассеяния:
+```{r}
+with(experimentResults, stripchart(value ~ factor, xlab = "Значения", ylab = "Факторы"))
+```
+
+
+Модель 
+
+$y_{ij} = \mu + \alpha_{i} + \epsilon_{ij}$
+
+$y_{i,j} = \mu_i+(влияние Фактора_j на Параметр_i)+(ошибка)$
+
+Выдвигается гипотиза о равенстве мат. ож. В случае их равенства, общее среднее явл оценкой для исследуемого параметра.
+
+Применяется aov().
+
+```{r}
+fit <- aov(value ~ factor, data=experimentResults)
+
+summary(fit)
+
+#stargazer(fit, type = 'html') results="asis"
+```
+
+Информация в классической таблице дисперсионного анализа:
+
+- factor Mean Sq - оценка дисп при нулевой гип.
+- Residuals Mean Sq - точечная оценка дисп независимо от выполн гип
+- Pr(>F) велико -> фактор не является значимым предиктором для значения
+
+Попарное сравнение с поправкой тьюке по умолчанию 95% д.и., но у нас a = 0.02
+
+```{r}
+(tykyFitTest = TukeyHSD(fit,conf.level = 0.98))
+
+```
+
+- diff - различия в абс числах 
+- lwr,upr - д.и
+- p adj - статистическая значимость между группами
+
+```{r}
+plot(tykyFitTest)
+tykyFitTestFactor = data.frame(p = tykyFitTest$factor[,4],factor = rownames(tykyFitTest$factor))
+ggplot(tykyFitTestFactor,aes(x = factor, y = p))+
+  geom_point()
+hist(tykyFitTest$factor[,1],breaks = 2.4)
+```
+
+- различия между группами не значимы
+
+
+
+
+Функция aov() которую мы применили предназначена для анализа сбалансированных наборов данных, т.е. таких ситуаций, когда имеется одинаковое число наблюдений для каждого уровня изучаемого фактора. Если условие сбалансированности не выполняется, следует использовать функцию lm().
+
+В нашем случае стоит это проверить.
+```{r}
+table(experimentResults$factor)
+```
+Как мы мидим, верить aov в нашем случае нельзя. Применим lm().
+
+###Упорядоченный фактор (polynomial contrasts: полиномиальные контрасты).
+```{r}
+experimentResults$factor = factor(experimentResults$factor,ordered = T)
+contrasts(experimentResults$factor)
+fit_lm <- lm(value ~ factor, data = experimentResults)
+summary(fit_lm)
+```
+
+В таблице с результатами анализа мы видим:
+
+- Residual standard error - оценка стандартного отклонения остатков. Предполагается, что остатки имеют нормальное распределение со средним значением 0 и стандартным отклонением σ. В данной строке результатов анализа как раз и приводится оценка значения σ.
+- Multiple R-squared и Adjusted R-squared: коэффициент детерминации и коэффициент детерминации с поправкой на число параметров модели соответственно.
+- F-statistic: значение критерия Фишера, при помощи которого проверяется нулевая гипотеза о том, что все коэффициенты модели (в нашем случае β1 и  β2) равны 0.
+
+Во второй строке приведена информация, отражающая, насколько значения фактора I лучше по сравнению с фактором O: видим, что среднее количество в группе I было несколько выше, чем в группе O (на  3.410), но это повышение не было статистически значимым (Pr(>|t|) = 0.39).
+
+###Не упорядоченный фактор (treatment contrasts: контрасты комбинаций условий).
+
+Гипотезы параметров модели.
+
+1) Cреднее значение для базового уровня $H_0: \mu_1 = 0$
+2) Cреднее значение второго уровня за вычетом среднего значения базового уровня $H_0: \mu_2 - \mu_1 = 0$
+3) Среднее значение третьего уровня за вычетом среднего значения базового уровня $H_0: \mu_3 - \mu_1 = 0$
+
+```{r}
+experimentResults$factor = factor(experimentResults$factor,ordered = F)
+contrasts(experimentResults$factor)
+fit_lm <- lm(value ~ factor, data = experimentResults)
+summary(fit_lm)
+```
+
+```{r results="asis"}
+#stargazer(fit_lm, type = 'html') 
+```
+Как видим, программа автоматически выбрала в качестве базового уровня группу наблюдений для 0
+
+###sum contrasts: контрасты сумм
+
+При параметризации модели дисперсионного анализа с помощью контрастов сумм базовый уровень, с которым сравниваются остальные уровни, представляет собой среднее значение из средних по каждой группе.
+
+- Estimate - среднее в группе(коэф b в лин модели)
+
+1) Среднее значение из средних по каждой группе ("общее среднее"): $H_0: \sum{\bar{x}_i} / k = 0$
+2) Cреднее значение первого уровня за вычетом общего среднего: $H_0: \bar{x}_1 - \sum{\bar{x}_i} / k = 0$
+
+```{r}
+(contrasts(experimentResults$factor) <- contr.sum(n = 5))
+fit_lm <- lm(value ~ factor, data = experimentResults)
+summary(fit_lm)
+```
+###Helmert contrasts: контрасты Хелмерта
+
+1) Среднее значение из средних по каждой группе ("общее среднее"): $H_0: \sum{\bar{x}_i} / k = 0$
+2) $H_0: \bar{x}_2 - (\bar{x}_1 + \sum{\bar{x}_i} / k) = 0$
+3) $H_0: \bar{x}_3 - (\bar{x}_1 +  \bar{x}_2 + \sum{\bar{x}_i} / k) = 0$
+
+```{r}
+(contrasts(experimentResults$factor) <- contr.helmert(n = 5))
+fit_lm <- lm(value ~ factor, data = experimentResults)
+summary(fit_lm)
+```
+###Изменим базовый уровень на 4 (обычный контраст комбинаций)
+```{r}
+contrasts(experimentResults$factor) <- contr.treatment(n = 5)
+# Изменим базовый уровень на 4:
+experimentResults$factor <- relevel(experimentResults$factor, ref = "IV")
+levels(experimentResults$factor)
+fit_lm <- lm(value ~ factor, data = experimentResults)
+summary(fit_lm)
+
+par(mfrow=c(2, 2))
+plot(fit_lm)
+```
+
+
+
+
+```{r}
+ggplot(experimentResults, aes(x = as.numeric(row.names(experimentResults)), y = value,col=factor)) + 
+  geom_point(aes(color = factor),size = 2)+
+  geom_smooth()
+ggplot(experimentResults, aes(x = as.numeric(row.names(experimentResults)), y = value)) + 
+  geom_point(aes(color = factor),size = 2)+
+  geom_smooth(method = "lm")
+ggplot(experimentResults, aes(x =
+as.numeric(row.names(experimentResults)), y = value)) + 
+  geom_point(aes(color = factor),size = 2)+
+  geom_smooth()
+ggplot(experimentResults, aes(x = as.numeric(row.names(experimentResults)), y = value)) + 
+  geom_point(aes(color = factor),size = 2)+
+  geom_smooth(method = "lm")+
+  facet_grid(.~factor)
+
+```
+
+
+
+Сноска про тест Тьюки
+
+Tukey's test compares the means of every treatment to the means of every other treatment; that is, it applies simultaneously to the set of all pairwise comparisons ${\displaystyle \mu _{i}-\mu _{j}\,}$, 
+and identifies any difference between two means that is greater than the expected standard error. The confidence coefficient for the set, when all sample sizes are equal, is exactly $1 − \alpha$. For unequal sample sizes, the confidence coefficient is greater than $1 − \alpha$. In other words, the Tukey method is conservative when there are unequal sample sizes.
+
+The Tukey confidence limits for all pairwise comparisons with confidence coefficient of at least $1 − \alpha$ are
+
+${\displaystyle {\bar {y}}_{i\bullet }-{\bar {y}}_{j\bullet }\pm {\frac {q_{\alpha ;k;N-k}}{\sqrt {2}}}{\widehat {\sigma }}_{\varepsilon }{\sqrt {\frac {2}{n}}}\qquad i,j=1,\ldots ,k\quad i\neq j.}$.

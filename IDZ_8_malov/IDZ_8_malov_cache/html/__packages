@@ -1,0 +1,11 @@
+base
+dplyr
+tidyr
+xtable
+ggvis
+ggplot2
+MASS
+survival
+fitdistrplus
+miscTools
+maxLik
