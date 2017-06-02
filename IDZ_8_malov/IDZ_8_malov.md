@@ -209,6 +209,31 @@ $y_{i,j} = \mu_i+(влияние Фактора_j на Параметр_i)+(ош
 ```
 
 
+<table style="text-align:center"><tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="1" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td>value</td></tr>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">factorI</td><td>2.340</td></tr>
+<tr><td style="text-align:left"></td><td>(3.190)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">factorII</td><td>1.230</td></tr>
+<tr><td style="text-align:left"></td><td>(3.040)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">factorIII</td><td>2.930</td></tr>
+<tr><td style="text-align:left"></td><td>(3.130)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">factorIV</td><td>5.090</td></tr>
+<tr><td style="text-align:left"></td><td>(6.170)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>8.700<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(2.760)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>50</td></tr>
+<tr><td style="text-align:left">R<sup>2</sup></td><td>0.035</td></tr>
+<tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>-0.050</td></tr>
+<tr><td style="text-align:left">Residual Std. Error</td><td>5.520 (df = 45)</td></tr>
+<tr><td style="text-align:left">F Statistic</td><td>0.414 (df = 4; 45)</td></tr>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>
 Как видим, программа автоматически выбрала в качестве базового уровня группу наблюдений для 0
 
 ###sum contrasts: контрасты сумм

@@ -3,6 +3,7 @@ title: "IDZ_6"
 author: "Nikita"
 date: "22.04.17"
 output:
+  word_document: default
   html_document:
     keep_md: yes
     output: null
@@ -10,7 +11,6 @@ output:
   pdf_document:
     keep_tex: yes
     toc: yes
-  word_document: default
   github_document: rmarkdown::github_document
 params:
   bibliography: bibl.bib
@@ -184,7 +184,7 @@ summary(fit_lm)
 ```
 
 ```{r results="asis"}
-#stargazer(fit_lm, type = 'html') 
+stargazer(fit_lm, type = 'html') 
 ```
 Как видим, программа автоматически выбрала в качестве базового уровня группу наблюдений для 0
 
